@@ -1,0 +1,11 @@
+{
+    "editor.fontFamily": "Sarasa Mono HC Light",
+    "editor.fontLigatures": true,
+    "editor.fontWeight": "bold",
+
+    "python.autoComplete.addBrackets": true,
+    "python.linting.flake8Enabled": true,
+    "files.associations": {
+        "iostream": "cpp"
+    }
+}
