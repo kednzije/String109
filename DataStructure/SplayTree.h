@@ -31,10 +31,12 @@ class SplayTree {
         void ReplaceSon(Node* p, Node* child, Node* newChild);
         void Rotate(Node* node);
         void Splay(Node* node);
+        Node* Merge(Node* l, Node* r);
     public:
         SplayTree();
         void Insert(int value);
         int Rank(int value);
+        void Delete(int value);
 };
 SplayTree::SplayTree() {
     root = nullptr;
@@ -63,13 +65,12 @@ void SplayTree::ReplaceSon(Node* p, Node* child, Node* newChild) {
     if(p != nullptr) {
         if(p->leftChild == child) {
             p->leftChild = newChild;
-            newChild->parent = p;
         }
         if(p->rightChild == child) {
             p->rightChild = newChild;
-            newChild->parent = p;
         }
     }
+    newChild->parent = p;
 }
 void SplayTree::Rotate(Node* node) {
     Node* p = node->parent;
@@ -80,7 +81,9 @@ void SplayTree::Rotate(Node* node) {
             p->leftChild = node->rightChild;
             node->rightChild = p;
 
-            p->leftChild->parent = p;
+            if(p->leftChild != nullptr) {
+                p->leftChild->parent = p;
+            }
             p->parent = node;
         }
         else {
@@ -88,7 +91,9 @@ void SplayTree::Rotate(Node* node) {
             p->rightChild = node->leftChild;
             node->leftChild = p;
 
-            p->rightChild->parent = p;
+            if(p->rightChild != nullptr) {
+                p->rightChild->parent = p;
+            }
             p->parent = node;
         }
 
@@ -108,6 +113,23 @@ void SplayTree::Splay(Node* node) {
         }
         Rotate(node);
     }
+    root = node;
+}
+Node* SplayTree::Merge(Node* l, Node* r) {
+    if(l == nullptr) {
+        return r;
+    }
+    if(r == nullptr) {
+        return l;
+    }
+    Node* cur = l;
+    while(cur->rightChild != nullptr) {
+        cur = cur->rightChild;
+    }
+    Splay(cur);
+    cur->rightChild = r;
+    r->parent = cur;
+    MaintainSize(cur);
 }
 
 void SplayTree::Insert(int value) {
@@ -168,6 +190,18 @@ int SplayTree::Rank(int value) {
             cur = cur->rightChild;
         }
     }
+}
+void SplayTree::Delete(int value) {
+    Rank(value);
+    if(root->cnt > 1) {
+        root->cnt--;
+        return;
+    }
+    Node* l = root->leftChild, * r = root->rightChild;
+    l->parent = r->parent = nullptr;
+    Node* shouldDelete = root;
+    root = Merge(l, r);
+    delete shouldDelete;
 }
 
 };
