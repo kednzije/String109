@@ -14,7 +14,12 @@ int main() {
             rbt.Insert(val);
             rbt.Display();
             break;
-        
+        case 1:
+            cin >> val;
+            rbt.Delete(val);
+            rbt.Display();
+            break;
+
         default:
             return 0;
         }

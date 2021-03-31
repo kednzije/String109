@@ -50,9 +50,11 @@ Node* BinarySearchTree::HiddenInsert(Node* node, int value) {
 
     if(value < node->value) {
         node->leftChild = HiddenInsert(node->leftChild, value);
+        node->leftChild->parent = node;
     }
     if(value > node->value) {
         node->rightChild = HiddenInsert(node->rightChild, value);
+        node->rightChild->parent = node;
     }
     return node;
 }
