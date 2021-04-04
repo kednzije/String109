@@ -1,3 +1,8 @@
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
 namespace String {
 
 class Node {
@@ -305,4 +310,44 @@ void SplayTree::Display() {
     return;
 }
 
+}
+
+int main() {
+    freopen("Data.in", "r", stdin);
+    freopen("AcceptedRes.out", "w", stdout);
+    String::SplayTree t;
+    int n;
+    cin >> n;
+    while(n--) {
+        int ope, val;
+        cin >> ope >> val;
+        switch (ope)
+        {
+        case 1:
+            t.Insert(val);
+            break;
+        case 2:
+            t.Delete(val);
+            break;
+        case 3:
+            cout << t.Rank(val) << endl;
+            break;
+        case 4:
+            cout << t.RankX(val) << endl;
+            break;
+        case 5:
+            cout << t.Predecessor(val) << endl;
+            break;
+        case 6:
+            cout << t.Successor(val) << endl;
+            break;
+        case 7:
+            t.Display();
+            break;
+        
+        default:
+            break;
+        }
+    }
+    return  0;
 }

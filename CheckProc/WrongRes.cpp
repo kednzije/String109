@@ -37,13 +37,15 @@ template <class T> Node<T>::Node(T v, Node* p) {
 template <class T> class Treap {
     protected:
         Node<T> * root;
-        void Split(Node<T> * node, T value, Node<T> *(* p1), Node<T> *(* p2));
+        void Split_v(Node<T> * node, T value, Node<T> *(* p1), Node<T> *(* p2));
+        void Split_k(Node<T> * node, int rank, Node<T> *(* p1), Node<T> *(* p2));
         Node<T> * Merge(Node<T> * u, Node<T> * v);
         Node<T> * Find(Node<T> * node, T value);
         void Update(Node<T> * node);
         void HiddenDisplay(Node<T> * node);
     public:
         Treap();
+        int Count(T value);
         void Insert(T value);
         void Erase(T value);
         int Rank(T value);
@@ -70,21 +72,53 @@ template <class T> void Treap<T>::Update(Node<T> * node) {
         node->rightChild->parent = node;
     }
 }
-template <class T> void Treap<T>::Split(Node<T> * node, T value, Node<T> *(* p1), Node<T> *(* p2)) {
+template <class T> void Treap<T>::Split_v(Node<T> * node, T value, Node<T> *(* p1), Node<T> *(* p2)) {
     if(node == nullptr) {
+        // return std::make_pair(nullptr, nullptr);
         (*p1) = (*p2) = nullptr;
         return;
     }
     if(value < node->value) {
+        // std::pair <Node<T> * , Node<T> * > childSplit = Split(node->leftChild, value);
+        // node->leftChild = childSplit.second;
+        // if(childSplit.second != nullptr) {
+        //     childSplit.second->parent = node->leftChild;
+        // }
+        // return std::make_pair(childSplit.first, node);
         (*p2) = node;
-        Split(node->leftChild, value, p1, &((*p2)->leftChild));
+        Split_v(node->leftChild, value, p1, &((*p2)->leftChild));
     }
     else {
+        // std::pair <Node<T> * , Node<T> * > childSplit = Split(node->rightChild, value);
+        // node->rightChild = childSplit.first;
+        // if(childSplit.first != nullptr) {
+        //     childSplit.first->parent = node->rightChild;
+        // }
+        // return std::make_pair(node, childSplit.second);
         (*p1) = node;
-        Split(node->rightChild, value, &((*p1)->rightChild), p2);
+        Split_v(node->rightChild, value, &((*p1)->rightChild), p2);
     }
     Update(node);
 }
+template <class T> void Treap<T>::Split_k(Node<T> * node, int rank, Node<T> *(* p1), Node<T> *(* p2)) {
+    if(node == nullptr) {
+        (*p1) = (*p2) = nullptr;
+        return;
+    }
+    int leftChildSize = 0;
+    if(node->leftChild != nullptr) {
+        leftChildSize = node->leftChild->size;
+    }
+    if(rank <= leftChildSize) {
+        (*p2) = node;
+        Split_k(node->leftChild, rank, p1, &(*p2)->leftChild);
+    }
+    else {
+        (*p1) = node;
+        Split_k(node->rightChild, rank - leftChildSize - 1, &((*p1)->rightChild), p2);
+    }
+    Update(node);
+} 
 template <class T> Node<T> * Treap<T>::Merge(Node<T> * u, Node<T> * v) {
     if(u == nullptr) {
         Update(v);
@@ -118,9 +152,18 @@ template <class T> Node<T> * Treap<T>::Find(Node<T> * node, T value) {
 
     return node;
 }
+template <class T> int Treap<T>::Count(T value) {
+    Node<T> * node = Find(root, value);
+    if(node != nullptr) {
+        return node->cnt;
+    }
+    else {
+        return 0;
+    }
+}
 template <class T> void Treap<T>::Insert(T value) {
     Node<T> * p1, * p2;
-    Split(root, value, &p1, &p2);
+    Split_v(root, value, &p1, &p2);
     Node<T> * node = Find(p1, value);
     if(node == nullptr) {
         p1 = Merge(p1, new Node<T>(value));
@@ -131,9 +174,9 @@ template <class T> void Treap<T>::Erase(T value) {
     return;
 }
 template <>  void Treap<int>::Erase(int value) {
-    Node<int> * p1, * p2, * p3, * shouldDelete;
-    Split(root, value - 1, &p1, &p2);
-    Split(p2, value, &p2, &p3);
+    Node<int> * p1, * p2, * p3;
+    Split_v(root, value, &p1, &p2);
+    Split_v(p2, value, &p2, &p3);
     delete p2;
     root = Merge(p1, p3);
     return;
@@ -143,7 +186,7 @@ template <class T> int Treap<T>::Rank(T value) {
 }
 template <> int Treap<int>::Rank(int value) {
     Node<int> * p1, * p2;
-    Split(root, value - 1, &p1, &p2);
+    Split_v(root, value - 1, &p1, &p2);
     int rank = 1;
     if(p1 != nullptr) {
         rank += p1->size;
@@ -177,7 +220,7 @@ template <class T> T Treap<T>::Predecessor(T value) {
 }
 template <> int Treap<int>::Predecessor(int value) {
     Node<int> * p1, * p2;
-    Split(root, value - 1, &p1, &p2);
+    Split_v(root, value - 1, &p1, &p2);
     Node<int> * curr = p1;
     if(curr == nullptr) {
         root = Merge(p1, p2);
@@ -194,7 +237,7 @@ template <class T> T Treap<T>::Successor(T value) {
 }
 template <> int Treap<int>::Successor(int value) {
     Node<int> * p1, * p2;
-    Split(root, value, &p1, &p2);
+    Split_v(root, value, &p1, &p2);
     Node<int> * curr = p2;
     if(curr == nullptr) {
         root = Merge(p1, p2);
@@ -228,7 +271,7 @@ template <class T> class TreapMultiset: public Treap<T> {
     protected:
         using Treap<T>::root;
         using Treap<T>::Find;
-        using Treap<T>::Split;
+        using Treap<T>::Split_v;
         using Treap<T>::Merge;
     public:
         void Insert(T value);
@@ -236,8 +279,14 @@ template <class T> class TreapMultiset: public Treap<T> {
 };
 template <class T> void TreapMultiset<T>::Insert(T value) {
     Node<T> * p1, * p2;
-    Split(root, value, &p1, &p2);
-    p1 = Merge(p1, new Node<T>(value));
+    Split_v(root, value, &p1, &p2);
+    Node<T> * node = Find(p1, value);
+    if(node == nullptr) {
+        p1 = Merge(p1, new Node<T>(value));
+    }
+    else {
+        node->cnt++;
+    }
     root = Merge(p1, p2);
 }
 template <class T> void TreapMultiset<T>::Erase(T value) {
@@ -245,12 +294,16 @@ template <class T> void TreapMultiset<T>::Erase(T value) {
 }
 template <> void TreapMultiset<int>::Erase(int value) {
     Node<int> * p1, * p2, * p3;
-    Split(root, value - 1, &p1, &p2);
-    Split(p2, value, &p2, &p3);
-    if(p2 != nullptr) {
-        p1 = Merge(p1, Merge(p2->leftChild, p2->rightChild));
+    Split_v(root, value - 1, &p1, &p2);
+    Split_v(p2, value, &p2, &p3);
+    if(p2 == nullptr) {}
+    else if(p2->cnt > 1) {
+        p2->cnt--;
+        p1 = Merge(p1, p2);
     }
-    delete p2;
+    else {
+        delete p2;
+    }
     root = Merge(p1, p3);
     return;
 }
@@ -258,7 +311,9 @@ template <> void TreapMultiset<int>::Erase(int value) {
 }
 
 int main() {
-    String::TreapMultiset <int> t;
+    freopen("Data.in", "r", stdin);
+    freopen("WrongRes.out", "w", stdout);
+    String::TreapMultiset<int> t;
     int n;
     cin >> n;
     while(n--) {
@@ -284,9 +339,9 @@ int main() {
         case 6:
             cout << t.Successor(val) << endl;
             break;
-        case 7:
-            t.Display();
-            break;
+        // case 7:
+        //     t.Display();
+        //     break;
         
         default:
             break;
@@ -318,7 +373,6 @@ Input:
 1 967521
 2 531821
 1 343410
-
 Output:
 964673
 964673
