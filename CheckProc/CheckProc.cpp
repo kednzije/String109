@@ -11,10 +11,11 @@ int main() {
         cout << "Making data...\n";
         system("MakeData.exe");
         cout << "Data is ready.\n";
+        system("AcceptedRes.exe");
+        cout << "Answer is ready.\n";
         double start = clock();
         system("WrongRes.exe");
         double end = clock();
-        system("AcceptedRes.exe");
         if(system("fc WrongRes.out AcceptedRes.out")) {
             printf("WA time used: %.4lfms\n");
             getchar();

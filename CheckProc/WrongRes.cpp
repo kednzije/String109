@@ -4,316 +4,484 @@ using namespace std;
 
 namespace String {
 
-template <class T> class Node {
+class Node {
     public:
-        T value;
-        int cnt, size;
-        int priority;
-        Node* leftChild, * rightChild, * parent;
+        int value, size, cnt;
+        bool isRed;
+        Node* parent, * child[2];
         Node();
-        Node(T v);
-        Node(T v, Node* p);
+        Node(int v);
+        Node(int v, Node* p);
 };
-
-template <class T> Node<T>::Node() {
-    cnt = size = 0;
-    priority = 0;
-    leftChild = rightChild = parent = nullptr;
+Node::Node() {
+    value = size = cnt = 0;
+    isRed = false;
+    parent = nullptr, child[0] = child[1] = nullptr;
 }
-template <class T> Node<T>::Node(T v) {
-    cnt = size = 1;
-    priority = rand();
-    value = v;
-    leftChild = rightChild = parent = nullptr;
+Node::Node(int v) {
+    value = v, size = cnt = 1;
+    isRed = false;
+    parent = nullptr, child[0] = child[1] = nullptr;
 }
-template <class T> Node<T>::Node(T v, Node* p) {
-    cnt = size = 1;
-    priority = rand();
-    value = v;
-    leftChild = rightChild = nullptr;
-    parent = p;
+Node::Node(int v, Node* p) {
+    value = v, size = cnt = 1;
+    isRed = true;
+    parent = p, child[0] = child[1] = nullptr;
 }
 
-template <class T> class Treap {
-    protected:
-        Node<T> * root;
-        void Split_v(Node<T> * node, T value, Node<T> *(* p1), Node<T> *(* p2));
-        void Split_k(Node<T> * node, int rank, Node<T> *(* p1), Node<T> *(* p2));
-        Node<T> * Merge(Node<T> * u, Node<T> * v);
-        Node<T> * Find(Node<T> * node, T value);
-        void Update(Node<T> * node);
-        void HiddenDisplay(Node<T> * node);
+class RedBlackTree {
+    private:
+        const bool LEFT=0, RIGHT=1;
+        Node* root;
+        void Update(Node* node);
+        void Rotate(Node* node, bool toRight);
+        void Fixup(Node* node);
+        void HiddenDisplay(Node* node);
+        Node* _Successor(Node* node);
+        void DeleteNode(Node* node);
+        void DeleteRedNode(Node* node);
+        void DeleteBlackNodeNotLeaf(Node* node);
+        void DeleteBlackNodeCase1(Node* node);
+        void DeleteBlackNodeCase2(Node* node);
+        void DeleteBlackNodeCase3(Node* node);
+        void DeleteBlackNodeCase4(Node* node);
+        Node* DeleteBlackNodeCase5(Node* node);
+        void DeleteBlackNodeIsLeaf(Node* node);
+        int Neighbor(int value, bool toRight);
+        bool Find(int value);
     public:
-        Treap();
-        int Count(T value);
-        void Insert(T value);
-        void Erase(T value);
-        int Rank(T value);
-        int RankX(int rank);
-        T Predecessor(T value);
-        T Successor(T value);
+        RedBlackTree();
+        void Insert(int value);
+        void Delete(int value);
         void Display();
+        int Rank(int value);
+        int RankX(int rank);
+        int Predecessor(int value);
+        int Successor(int value);
 };
 
-template <class T> Treap<T>::Treap() {
+RedBlackTree::RedBlackTree() {
     root = nullptr;
 }
-template <class T> void Treap<T>::Update(Node<T> * node) {
-    if(node == nullptr) {
-        return;
-    }
+void RedBlackTree::Update(Node* node) {
     node->size = node->cnt;
-    if(node->leftChild != nullptr) {
-        node->size += node->leftChild->size;
-        node->leftChild->parent = node;
-    }
-    if(node->rightChild != nullptr) {
-        node->size += node->rightChild->size;
-        node->rightChild->parent = node;
+    for(int i = 0; i < 2; i++) {
+        if(node->child[i] != nullptr) {
+            node->size += node->child[i]->size;
+        }
     }
 }
-template <class T> void Treap<T>::Split_v(Node<T> * node, T value, Node<T> *(* p1), Node<T> *(* p2)) {
-    if(node == nullptr) {
-        // return std::make_pair(nullptr, nullptr);
-        (*p1) = (*p2) = nullptr;
-        return;
-    }
-    if(value < node->value) {
-        // std::pair <Node<T> * , Node<T> * > childSplit = Split(node->leftChild, value);
-        // node->leftChild = childSplit.second;
-        // if(childSplit.second != nullptr) {
-        //     childSplit.second->parent = node->leftChild;
-        // }
-        // return std::make_pair(childSplit.first, node);
-        (*p2) = node;
-        Split_v(node->leftChild, value, p1, &((*p2)->leftChild));
+/*void RedBlackTree::LeftRotate(Node* node) {
+    Node* tempNode = node->child[RIGHT];
+
+    tempNode->child[LEFT]->parent = node;
+    node->child[RIGHT] = tempNode->child[LEFT];
+
+    tempNode->child[LEFT] = node;
+    node->parent = tempNode;
+    
+    tempNode->parent = node->parent;
+    if(tempNode->parent == nullptr) {
+        root = tempNode;
     }
     else {
-        // std::pair <Node<T> * , Node<T> * > childSplit = Split(node->rightChild, value);
-        // node->rightChild = childSplit.first;
-        // if(childSplit.first != nullptr) {
-        //     childSplit.first->parent = node->rightChild;
-        // }
-        // return std::make_pair(node, childSplit.second);
-        (*p1) = node;
-        Split_v(node->rightChild, value, &((*p1)->rightChild), p2);
+        tempNode->parent->child[node == node->parent->child[1]] = tempNode;
     }
-    Update(node);
-}
-template <class T> void Treap<T>::Split_k(Node<T> * node, int rank, Node<T> *(* p1), Node<T> *(* p2)) {
-    if(node == nullptr) {
-        (*p1) = (*p2) = nullptr;
-        return;
+}*/
+/*void RedBlackTree::Rotate(Node* node, bool toRight) {
+    Node* tempNode = node->child[!toRight];
+    if(tempNode->child[toRight] != nullptr) {
+        tempNode->child[toRight]->parent = node;
     }
-    int leftChildSize = 0;
-    if(node->leftChild != nullptr) {
-        leftChildSize = node->leftChild->size;
-    }
-    if(rank <= leftChildSize) {
-        (*p2) = node;
-        Split_k(node->leftChild, rank, p1, &(*p2)->leftChild);
+    node->child[!toRight] = tempNode->child[toRight];
+    
+    tempNode->parent = node->parent;
+    if(tempNode->parent == nullptr) {
+        root = tempNode;
     }
     else {
-        (*p1) = node;
-        Split_k(node->rightChild, rank - leftChildSize - 1, &((*p1)->rightChild), p2);
-    }
-    Update(node);
-} 
-template <class T> Node<T> * Treap<T>::Merge(Node<T> * u, Node<T> * v) {
-    if(u == nullptr) {
-        Update(v);
-        return v;
-    }
-    if(v == nullptr) {
-        Update(u);
-        return u;
-    }
-    if(u->priority > v->priority) {
-        u->rightChild = Merge(u->rightChild, v);
-        Update(u);
-        return u;
-    }
-    else {
-        v->leftChild = Merge(u, v->leftChild);
-        Update(v);
-        return v;
-    }
-}
-template <class T> Node<T> * Treap<T>::Find(Node<T> * node, T value) {
-    if(node == nullptr) {
-        return nullptr;
-    }
-    if(value < node->value) {
-        return Find(node->leftChild, value);
-    }
-    else if(value > node->value) {
-        return Find(node->rightChild, value);
+        tempNode->parent->child[node == node->parent->child[RIGHT]] = tempNode;
     }
 
-    return node;
-}
-template <class T> int Treap<T>::Count(T value) {
-    Node<T> * node = Find(root, value);
-    if(node != nullptr) {
-        return node->cnt;
+    tempNode->child[toRight] = node;
+    node->parent = tempNode;
+}*/
+void RedBlackTree::Rotate(Node* node, bool toRight) {
+    Node* p = node->parent;
+    Node* childNode = node->child[!toRight];
+
+    if(childNode->child[toRight] != nullptr) {
+        childNode->child[toRight]->parent = node; 
+    }
+    node->child[!toRight] = childNode->child[toRight];
+
+    childNode->child[toRight] = node;
+    node->parent = childNode;
+
+    childNode->parent = p;
+    if(p == nullptr) {
+        root = childNode;
     }
     else {
-        return 0;
+        p->child[node == p->child[RIGHT]] = childNode;
     }
+    Update(node);
+    Update(childNode);
+    return;
 }
-template <class T> void Treap<T>::Insert(T value) {
-    Node<T> * p1, * p2;
-    Split_v(root, value, &p1, &p2);
-    Node<T> * node = Find(p1, value);
+void RedBlackTree::Fixup(Node* node) {
+    while(node->parent != nullptr && node->parent->isRed) {
+        /*if(node->parent = node->parent->parent->child[LEFT]) {
+            Node* uncleNode = node->parent->child[RIGHT];
+            if(uncleNode->isRed) {
+                node->parent->isRed = uncleNode->isRed = false;
+                node->parent->parent->isRed = true;
+                node = node->parent->parent;
+            }
+            else {
+                if(node = node->parent->child[RIGHT]) {
+                    node = node->parent;
+                    Rotate(node, LEFT);
+                }
+                node->parent->isRed = false;
+                node->parent->parent->isRed = true;
+                Rotate(node->parent->parent, RIGHT);
+            }
+        }*/
+        bool isLeft = (node->parent == node->parent->parent->child[LEFT]);
+        
+        Node* uncleNode = node->parent->parent->child[isLeft];
+        if(uncleNode != nullptr && uncleNode->isRed) {
+            node->parent->isRed = uncleNode->isRed = false;
+            node->parent->parent->isRed = true;
+            node = node->parent->parent;
+        }
+        else {
+            if(node == node->parent->child[isLeft]) {
+                node = node->parent;
+                Rotate(node, !isLeft);
+            }
+            node->parent->isRed = false;
+            node->parent->parent->isRed = true;
+            Rotate(node->parent->parent, isLeft);
+        }
+    }
+    root->isRed = false;
+}
+void RedBlackTree::HiddenDisplay(Node* node) {
     if(node == nullptr) {
-        p1 = Merge(p1, new Node<T>(value));
+        return;
     }
-    root = Merge(p1, p2);
+    HiddenDisplay(node->child[LEFT]);
+    for(int i = 1; i <= node->cnt; i++) {
+        std::cout << node->value << ' ';
+    }
+    HiddenDisplay(node->child[RIGHT]);
 }
-template <class T> void Treap<T>::Erase(T value) {
+Node* RedBlackTree::_Successor(Node* node) {
+    Node* succ = node->child[RIGHT];
+    while(succ->child[LEFT] != nullptr) {
+        succ->size--;
+        succ = succ->child[LEFT];
+    }
+    return succ;
+}
+void RedBlackTree::DeleteNode(Node* node) {
+    Node* p = node->parent;
+    if(p == nullptr) {
+        root = nullptr;
+        delete node;
+        return;
+    }
+    p->child[node == p->child[RIGHT]] = nullptr;
+    delete node;
+    return;
+} 
+void RedBlackTree::DeleteRedNode(Node* node) {
+    DeleteNode(node);
+}
+void RedBlackTree::DeleteBlackNodeNotLeaf(Node* node) {
+    Node* childNode;
+    if(node->child[LEFT] == nullptr) {
+        childNode = node->child[RIGHT];
+    }
+    else {
+        childNode = node->child[LEFT];
+    }
+
+    childNode->isRed = false;
+    Node* p = node->parent;
+    childNode->parent = p;
+    if(p == nullptr) {
+        root = childNode;
+    }
+    else {
+        p->child[node == p->child[RIGHT]] = childNode;
+    }
+    delete node;
+}
+void RedBlackTree::DeleteBlackNodeCase1(Node* node) {
+    // Case 1: The brother of the node to be deleted is red.
+    //         This function is used to turn this case to followed cases.
+    Node* p = node->parent;
+    bool isLeftChild = (node == p->child[LEFT]);
+
+    Node* bro = p->child[isLeftChild];
+    p->isRed = true;
+    bro->isRed = false;
+    Rotate(p, !isLeftChild);
+}
+void RedBlackTree::DeleteBlackNodeCase2(Node* node) {
+    // Case 2: The brother of the node to be deleted is black
+    //         and the further nephew is red.
+    Node* p = node->parent;
+    bool isLeftChild = (node == p->child[LEFT]);
+
+    Node* bro = p->child[isLeftChild];
+    bool tempColor = p->isRed;
+    p->isRed = bro->isRed;
+    bro->isRed = tempColor;
+
+    bro->child[isLeftChild]->isRed = false;
+    Rotate(p, !isLeftChild);
+}
+void RedBlackTree::DeleteBlackNodeCase3(Node* node) {
+    // Case 3: The brother of the node to be deleted is black
+    //         and the closer nephew is red.
+    //         This function is used to turn this case to case 2.
+    Node* p = node->parent;
+    bool isLeftChild = (node == p->child[LEFT]);
+
+    Node* bro = p->child[isLeftChild];
+    
+    bro->isRed = true;
+    bro->child[!isLeftChild]->isRed = false;
+
+    Rotate(bro, isLeftChild);
+}
+void RedBlackTree::DeleteBlackNodeCase4(Node* node) {
+    // Case 4: The brother of the node to be deleted is black
+    //         and both the nephews are black (and are both nullptr)
+    //         when the parent of the node is red.
+    Node* p = node->parent;
+    bool isLeftChild = (node == p->child[LEFT]);
+
+    Node* bro = p->child[isLeftChild];
+
+    p->isRed = false;
+    bro->isRed = true;
+}
+Node* RedBlackTree::DeleteBlackNodeCase5(Node* node) {
+    // Case 5: The brother of the node to be deleted is black
+    //         and both the nephews are black (and are both nullptr)
+    //         when the parent of the node is black.
+    Node* p = node->parent;
+    bool isLeftChild = (node == p->child[LEFT]);
+
+    Node* bro = p->child[isLeftChild];
+    bro->isRed = true;
+    return p;
+}
+void RedBlackTree::DeleteBlackNodeIsLeaf(Node* node) {
+    Node* curr = node;
+    while(curr != root) {
+        Node* p = curr->parent;
+        bool isLeftChild = (curr == p->child[LEFT]);
+        Node* bro = p->child[isLeftChild];
+        if(bro->isRed) {
+            DeleteBlackNodeCase1(curr);
+            continue;
+        }
+        Node* furtherNephew = bro->child[isLeftChild];
+        Node* closerNephew = bro->child[!isLeftChild];
+        if(furtherNephew != nullptr && furtherNephew->isRed) {
+            DeleteBlackNodeCase2(curr);
+            break;
+        }
+        if(closerNephew != nullptr && closerNephew->isRed) {
+            DeleteBlackNodeCase3(curr);
+            continue;
+        }
+        if(p->isRed) {
+            DeleteBlackNodeCase4(curr);
+            break;
+        }
+
+        curr = DeleteBlackNodeCase5(curr);
+    }
+    DeleteNode(node);
+}
+
+bool RedBlackTree::Find(int value) {
+    Node* curr = root;
+    while(true) {
+        if(curr == nullptr) {
+            return false;
+        }
+        if(curr->value == value) {
+            return true;
+        }
+        if(value < curr->value) {
+            curr = curr->child[LEFT];
+        }
+        else {
+            curr = curr->child[RIGHT];
+        }
+    }
+}
+void RedBlackTree::Insert(int value) {
+    if(root == nullptr) {
+        root = new Node(value);
+        return;
+    }
+    Node* curr = root, * pred = nullptr;
+    while(curr != nullptr) {
+        curr->size++;
+        pred = curr;
+        if(value < curr->value) {
+            curr = curr->child[LEFT];
+        }
+        else if(value > curr->value) {
+            curr = curr->child[RIGHT];
+        }
+        else {
+            curr->cnt++;
+            return;
+        }
+    }
+    Node* node = new Node(value, pred);
+    pred->child[value > pred->value] = node;
+    Fixup(node);
     return;
 }
-template <>  void Treap<int>::Erase(int value) {
-    Node<int> * p1, * p2, * p3;
-    Split_v(root, value, &p1, &p2);
-    Split_v(p2, value, &p2, &p3);
-    delete p2;
-    root = Merge(p1, p3);
-    return;
-}
-template <class T> int Treap<T>::Rank(T value) {
-    return 0;
-}
-template <> int Treap<int>::Rank(int value) {
-    Node<int> * p1, * p2;
-    Split_v(root, value - 1, &p1, &p2);
-    int rank = 1;
-    if(p1 != nullptr) {
-        rank += p1->size;
+void RedBlackTree::Delete(int value) {
+    if(!Find(value)) {
+        return;
     }
-    root = Merge(p1, p2);
-    return rank;
+    Node* curr = root;
+    while(true) {
+        if(curr == nullptr) {
+            return;
+        }
+        curr->size--;
+        if(curr->value == value) {
+            break;
+        }
+        if(value < curr->value) {
+            curr = curr->child[LEFT];
+        }
+        else {
+            curr = curr->child[RIGHT];
+        }
+    }
+    if(curr->cnt > 1) {
+        curr->cnt--;
+        return;
+    }
+    if(curr->child[LEFT] != nullptr && curr->child[RIGHT] != nullptr) {
+        Node* succ = _Successor(curr);
+        curr->value = succ->value;
+        curr->cnt = succ->cnt;
+        curr = succ;
+    }
+    if(curr->child[LEFT] == nullptr && curr->child[RIGHT] == nullptr) {
+        if(curr->isRed) {
+            DeleteRedNode(curr);
+        }
+        else {
+            DeleteBlackNodeIsLeaf(curr);
+        }
+    }
+    else {
+        DeleteBlackNodeNotLeaf(curr);
+    }
 }
-template <class T> int Treap<T>::RankX(int rank) {
-    Node<T>* curr = root;
+void RedBlackTree::Display() {
+    HiddenDisplay(root);
+    std::cout << std::endl;
+}
+int RedBlackTree::Rank(int value) {
+    int cnt = 0;
+    Node* curr = root;
+    while(curr != nullptr) {
+        if(value < curr->value) {
+            curr = curr->child[LEFT];
+        }
+        else {
+            if(curr->child[LEFT] != nullptr) {
+                cnt += curr->child[LEFT]->size;
+            }
+            if(value == curr->value) {
+                return cnt + 1;
+            }
+            cnt += curr->cnt;
+            curr = curr->child[RIGHT];
+        }
+    }
+    return cnt + 1;
+}
+int RedBlackTree::RankX(int rank) {
+    Node* curr = root;
     int cnt = 0;
     while(curr != nullptr) {
         int leftChildSize = 0;
-        if(curr->leftChild != nullptr) {
-            leftChildSize = curr->leftChild->size;
+        if(curr->child[LEFT] != nullptr) {
+            leftChildSize = curr->child[LEFT]->size;
         }
         if(leftChildSize + cnt >= rank) {
-            curr = curr->leftChild;
+            curr = curr->child[LEFT];
         }
         else if(leftChildSize + cnt + curr->cnt < rank) {
             cnt += leftChildSize;
             cnt += curr->cnt;
-            curr = curr->rightChild;
+            curr = curr->child[RIGHT];
         }
         else {
             return curr->value;
         }
     }
 }
-template <class T> T Treap<T>::Predecessor(T value) {
-    return value;
-}
-template <> int Treap<int>::Predecessor(int value) {
-    Node<int> * p1, * p2;
-    Split_v(root, value - 1, &p1, &p2);
-    Node<int> * curr = p1;
-    if(curr == nullptr) {
-        root = Merge(p1, p2);
-        return value;
+int RedBlackTree::Neighbor(int value, bool toRight) {
+    Node* curr = root, * prev = nullptr;
+    while(curr != nullptr) {
+        prev = curr;
+        if((curr->value > value && toRight) || (curr->value < value && !toRight)) {
+            curr = curr->child[!toRight];
+        }
+        else {
+            curr = curr->child[toRight];
+        }
     }
-    while(curr->rightChild != nullptr) {
-        curr = curr->rightChild;
+    if((prev->value > value && toRight) || (prev->value < value && !toRight)) {
+        return prev->value;
     }
-    root = Merge(p1, p2);
-    return curr->value;
-}
-template <class T> T Treap<T>::Successor(T value) {
-    return value;
-}
-template <> int Treap<int>::Successor(int value) {
-    Node<int> * p1, * p2;
-    Split_v(root, value, &p1, &p2);
-    Node<int> * curr = p2;
-    if(curr == nullptr) {
-        root = Merge(p1, p2);
-        return value;
-    }
-    while(curr->leftChild != nullptr) {
-        curr = curr->leftChild;
-    }
-    root = Merge(p1, p2);
-    return curr->value;
-}
-template <class T> void Treap<T>::HiddenDisplay(Node<T> * node) {
-    if(node == nullptr) {
-        return;
-    }
-    HiddenDisplay(node->leftChild);
-    for(int i = 1; i <= node->cnt; i++) {
-        std::cout << node->value << ' ';
-    }
-    HiddenDisplay(node->rightChild);
-    return;
-}
-template <class T> void Treap<T>::Display() {
-    HiddenDisplay(root);
-    std::cout << std::endl;
-    return;
-}
-
-template <class T> class TreapSet: public Treap<T> {};
-template <class T> class TreapMultiset: public Treap<T> {
-    protected:
-        using Treap<T>::root;
-        using Treap<T>::Find;
-        using Treap<T>::Split_v;
-        using Treap<T>::Merge;
-    public:
-        void Insert(T value);
-        void Erase(T value);
-};
-template <class T> void TreapMultiset<T>::Insert(T value) {
-    Node<T> * p1, * p2;
-    Split_v(root, value, &p1, &p2);
-    Node<T> * node = Find(p1, value);
-    if(node == nullptr) {
-        p1 = Merge(p1, new Node<T>(value));
+    if(prev->child[toRight] == nullptr) {
+        while(prev->parent != nullptr && prev == prev->parent->child[toRight]) {
+            prev = prev->parent;
+        }
+        prev = prev->parent;
     }
     else {
-        node->cnt++;
+        prev = prev->child[toRight];
+        while(prev->child[!toRight] != nullptr) {
+            prev = prev->child[!toRight];
+        }
     }
-    root = Merge(p1, p2);
+    return prev->value;
 }
-template <class T> void TreapMultiset<T>::Erase(T value) {
-    return;
+int RedBlackTree::Predecessor(int value) {
+    return Neighbor(value, LEFT);
 }
-template <> void TreapMultiset<int>::Erase(int value) {
-    Node<int> * p1, * p2, * p3;
-    Split_v(root, value - 1, &p1, &p2);
-    Split_v(p2, value, &p2, &p3);
-    if(p2 == nullptr) {}
-    else if(p2->cnt > 1) {
-        p2->cnt--;
-        p1 = Merge(p1, p2);
-    }
-    else {
-        delete p2;
-    }
-    root = Merge(p1, p3);
-    return;
+int RedBlackTree::Successor(int value) {
+    return Neighbor(value, RIGHT);
 }
-
+    
 }
 
 int main() {
     freopen("Data.in", "r", stdin);
     freopen("WrongRes.out", "w", stdout);
-    String::TreapMultiset<int> t;
+    String::RedBlackTree t;
     int n;
     cin >> n;
     while(n--) {
@@ -325,7 +493,7 @@ int main() {
             t.Insert(val);
             break;
         case 2:
-            t.Erase(val);
+            t.Delete(val);
             break;
         case 3:
             cout << t.Rank(val) << endl;
@@ -339,9 +507,9 @@ int main() {
         case 6:
             cout << t.Successor(val) << endl;
             break;
-        // case 7:
-        //     t.Display();
-        //     break;
+        case 7:
+            t.Display();
+            break;
         
         default:
             break;
@@ -349,39 +517,3 @@ int main() {
     }
     return  0;
 }
-
-/*
-Input:
-20
-1 964673
-5 968705
-4 1
-3 964673
-5 965257
-1 915269
-1 53283
-3 964673
-3 53283
-3 53283
-1 162641
-5 973984
-1 948119
-2 915269
-2 53283
-6 959161
-1 531821
-1 967521
-2 531821
-1 343410
-Output:
-964673
-964673
-1
-964673
-3
-1
-1
-964673
-964673
-
-*/

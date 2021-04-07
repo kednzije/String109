@@ -52,7 +52,7 @@ int main() {
                 break;
             }
             i = rand() % vec.size();
-            cout << ope << ' ' << vec[i] + rand() % vec[i] << endl;
+            cout << ope << ' ' << vec[i] + rand() % vec[i] + 1 << endl;
             break;
         case 6:
             if(vec.size() == 0) {
@@ -60,7 +60,7 @@ int main() {
                 break;
             }
             i = rand() % vec.size();
-            cout << ope << ' ' << rand() % vec[i] << endl;
+            cout << ope << ' ' << rand() % vec[i] - 1 << endl;
             break;
         
         default:

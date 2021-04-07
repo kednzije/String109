@@ -1,223 +1,161 @@
 
 #include <iostream>
 #include <vector>
+#include <time.h>
+#include <stdlib.h>
 using namespace std;
 
 namespace String {
 
-class Node {
+template <class T> class Node {
     public:
-        int value, cnt, size;
+        T value;
+        int cnt, size;
+        int priority;
         Node* leftChild, * rightChild, * parent;
         Node();
-        Node(int v);
-        Node(int v, Node* p);
+        Node(T v);
+        Node(T v, Node* p);
 };
-Node::Node() {
-    value = cnt = size = 0;
+
+template <class T> Node<T>::Node() {
+    cnt = size = 0;
+    priority = 0;
     leftChild = rightChild = parent = nullptr;
 }
-Node::Node(int v) {
-    value = v, cnt = size = 1;
+template <class T> Node<T>::Node(T v) {
+    cnt = size = 1;
+    priority = rand();
+    value = v;
     leftChild = rightChild = parent = nullptr;
 }
-Node::Node(int v, Node* p) {
-    value = v, cnt = size = 1;
-    leftChild = rightChild = nullptr, parent = p;
+template <class T> Node<T>::Node(T v, Node* p) {
+    cnt = size = 1;
+    priority = rand();
+    value = v;
+    leftChild = rightChild = nullptr;
+    parent = p;
 }
 
-class SplayTree {
-    private:
-        Node* root;
-        int tot;
-        void MaintainSize(Node* node);
-        bool isLeftChild(Node* node);
-        void Delete(Node* node);
-        void ReplaceSon(Node* p, Node* child, Node* newChild);
-        void Rotate(Node* node);
-        void Splay(Node* node);
-        Node* Merge(Node* l, Node* r);
-        void HiddenDisplay(Node* node);
+template <class T> class Treap {
+    protected:
+        Node<T> * root;
+        void Split(Node<T> * node, T value, Node<T> *(* p1), Node<T> *(* p2));
+        Node<T> * Merge(Node<T> * u, Node<T> * v);
+        Node<T> * Find(Node<T> * node, T value);
+        void Update(Node<T> * node);
+        void HiddenDisplay(Node<T> * node);
     public:
-        SplayTree();
-        void Display();
-        void Insert(int value);
-        int Rank(int value);
-        void Delete(int value);
+        Treap();
+        void Insert(T value);
+        void Erase(T value);
+        int Rank(T value);
         int RankX(int rank);
-        int Predecessor(int value);
-        int Successor(int value);
+        T Predecessor(T value);
+        T Successor(T value);
+        void Display();
 };
-SplayTree::SplayTree() {
+
+template <class T> Treap<T>::Treap() {
     root = nullptr;
-    tot = 0;
 }
-void SplayTree::MaintainSize(Node* node) {
+template <class T> void Treap<T>::Update(Node<T> * node) {
     if(node == nullptr) {
         return;
     }
     node->size = node->cnt;
     if(node->leftChild != nullptr) {
         node->size += node->leftChild->size;
+        node->leftChild->parent = node;
     }
     if(node->rightChild != nullptr) {
         node->size += node->rightChild->size;
+        node->rightChild->parent = node;
     }
+}
+template <class T> void Treap<T>::Split(Node<T> * node, T value, Node<T> *(* p1), Node<T> *(* p2)) {
+    if(node == nullptr) {
+        (*p1) = (*p2) = nullptr;
+        return;
+    }
+    if(value < node->value) {
+        (*p2) = node;
+        Split(node->leftChild, value, p1, &((*p2)->leftChild));
+    }
+    else {
+        (*p1) = node;
+        Split(node->rightChild, value, &((*p1)->rightChild), p2);
+    }
+    Update(node);
+}
+template <class T> Node<T> * Treap<T>::Merge(Node<T> * u, Node<T> * v) {
+    if(u == nullptr) {
+        Update(v);
+        return v;
+    }
+    if(v == nullptr) {
+        Update(u);
+        return u;
+    }
+    if(u->priority > v->priority) {
+        u->rightChild = Merge(u->rightChild, v);
+        Update(u);
+        return u;
+    }
+    else {
+        v->leftChild = Merge(u, v->leftChild);
+        Update(v);
+        return v;
+    }
+}
+template <class T> Node<T> * Treap<T>::Find(Node<T> * node, T value) {
+    if(node == nullptr) {
+        return nullptr;
+    }
+    if(value < node->value) {
+        return Find(node->leftChild, value);
+    }
+    else if(value > node->value) {
+        return Find(node->rightChild, value);
+    }
+
+    return node;
+}
+template <class T> void Treap<T>::Insert(T value) {
+    Node<T> * p1, * p2;
+    Split(root, value, &p1, &p2);
+    Node<T> * node = Find(p1, value);
+    if(node == nullptr) {
+        p1 = Merge(p1, new Node<T>(value));
+    }
+    root = Merge(p1, p2);
+}
+template <class T> void Treap<T>::Erase(T value) {
     return;
 }
-bool SplayTree::isLeftChild(Node* node) {
-    return node == node->parent->leftChild;
+template <>  void Treap<int>::Erase(int value) {
+    Node<int> * p1, * p2, * p3, * shouldDelete;
+    Split(root, value - 1, &p1, &p2);
+    Split(p2, value, &p2, &p3);
+    delete p2;
+    root = Merge(p1, p3);
+    return;
 }
-void SplayTree::Delete(Node* node) {
-    delete node;
+template <class T> int Treap<T>::Rank(T value) {
+    return 0;
 }
-void SplayTree::ReplaceSon(Node* p, Node* child, Node* newChild) {
-    if(p != nullptr) {
-        if(p->leftChild == child) {
-            p->leftChild = newChild;
-        }
-        if(p->rightChild == child) {
-            p->rightChild = newChild;
-        }
+template <> int Treap<int>::Rank(int value) {
+    Node<int> * p1, * p2;
+    Split(root, value - 1, &p1, &p2);
+    int rank = 1;
+    if(p1 != nullptr) {
+        rank += p1->size;
     }
-    newChild->parent = p;
+    root = Merge(p1, p2);
+    return rank;
 }
-void SplayTree::Rotate(Node* node) {
-    Node* p = node->parent;
-    if(p != nullptr) {
-        Node* g = p->parent;
-        if(isLeftChild(node)) {
-            ReplaceSon(g, p, node);
-            p->leftChild = node->rightChild;
-            node->rightChild = p;
-
-            if(p->leftChild != nullptr) {
-                p->leftChild->parent = p;
-            }
-            p->parent = node;
-        }
-        else {
-            ReplaceSon(g, p, node);
-            p->rightChild = node->leftChild;
-            node->leftChild = p;
-
-            if(p->rightChild != nullptr) {
-                p->rightChild->parent = p;
-            }
-            p->parent = node;
-        }
-
-        MaintainSize(p);
-        MaintainSize(node);
-    }
-}
-void SplayTree::Splay(Node* node) {
-    while(node->parent != nullptr) {
-        if(node->parent->parent != nullptr) {
-            if(isLeftChild(node) == isLeftChild(node->parent)) {
-                Rotate(node->parent);
-            }
-            else {
-                Rotate(node);
-            }
-        }
-        Rotate(node);
-    }
-    root = node;
-}
-Node* SplayTree::Merge(Node* l, Node* r) {
-    if(l == nullptr) {
-        return r;
-    }
-    if(r == nullptr) {
-        return l;
-    }
-    Node* cur = l;
-    while(cur->rightChild != nullptr) {
-        cur = cur->rightChild;
-    }
-    Splay(cur);
-    cur->rightChild = r;
-    r->parent = cur;
-    MaintainSize(cur);
-}
-
-void SplayTree::Insert(int value) {
-    tot++;
-    if(root == nullptr) {
-        root = new Node(value);
-        return;
-    }
-    Node* cur = root;
-    while(true) {
-        cur->size++;
-
-        if(cur->value == value) {
-            cur->cnt++;
-            Splay(cur);
-            break;
-        }
-
-        if(value < cur->value) {
-            if(cur->leftChild == nullptr) {
-                cur->leftChild = new Node(value, cur);
-                Splay(cur->leftChild);
-                break;
-            }
-
-            cur = cur->leftChild;
-        }
-        else {
-            if(cur->rightChild == nullptr) {
-                cur->rightChild = new Node(value, cur);
-                Splay(cur->rightChild);
-                break;
-            }
-
-            cur = cur->rightChild;
-        }
-    }
-}
-int SplayTree::Rank(int value) {
-    int cnt = 0;
-    Node* curr = root;
-    while(curr != nullptr) {
-        if(value < curr->value) {
-            curr = curr->leftChild;
-        }
-        else {
-            if(curr->leftChild != nullptr) {
-                cnt += curr->leftChild->size;
-            }
-            if(value == curr->value) {
-                Splay(curr);
-                return cnt + 1;
-            }
-            cnt += curr->cnt;
-            curr = curr->rightChild;
-        }
-    }
-    return cnt + 1;
-}
-void SplayTree::Delete(int value) {
-    Rank(value);
-    if(root->cnt > 1) {
-        root->cnt--;
-        return;
-    }
-    Node* l = root->leftChild, * r = root->rightChild;
-    if(l != nullptr) {
-        l->parent = nullptr;
-    }
-    if(r != nullptr) {
-        r->parent = nullptr;
-    }
-    Node* shouldDelete = root;
-    root = Merge(l, r);
-    delete shouldDelete;
-}
-int SplayTree::RankX(int rank) {
-    Node* curr = root;
+template <class T> int Treap<T>::RankX(int rank) {
+    Node<T>* curr = root;
     int cnt = 0;
     while(curr != nullptr) {
         int leftChildSize = 0;
@@ -237,63 +175,41 @@ int SplayTree::RankX(int rank) {
         }
     }
 }
-int SplayTree::Predecessor(int value) {
-    Node* curr = root, * prev = nullptr;
-    while(curr != nullptr) {
-        prev = curr;
-        if(curr->value < value) {
-            curr = curr->rightChild;
-        }
-        else {
-            curr = curr->leftChild;
-        }
-    }
-    if(prev->value < value) {
-        return prev->value;
-    }
-    if(prev->leftChild == nullptr) {
-        while(prev->parent != nullptr && prev == prev->parent->leftChild) {
-            prev = prev->parent;
-        }
-        prev = prev->parent;
-    }
-    else {
-        prev = prev->leftChild;
-        while(prev->rightChild != nullptr) {
-            prev = prev->rightChild;
-        }
-    }
-    return prev->value;
+template <class T> T Treap<T>::Predecessor(T value) {
+    return value;
 }
-int SplayTree::Successor(int value) {
-    Node* curr = root, * prev = nullptr;
-    while(curr != nullptr) {
-        prev = curr;
-        if(curr->value > value) {
-            curr = curr->leftChild;
-        }
-        else {
-            curr = curr->rightChild;
-        }
+template <> int Treap<int>::Predecessor(int value) {
+    Node<int> * p1, * p2;
+    Split(root, value - 1, &p1, &p2);
+    Node<int> * curr = p1;
+    if(curr == nullptr) {
+        root = Merge(p1, p2);
+        return value;
     }
-    if(prev->value > value) {
-        return prev->value;
+    while(curr->rightChild != nullptr) {
+        curr = curr->rightChild;
     }
-    if(prev->rightChild == nullptr) {
-        while(prev->parent != nullptr && prev == prev->parent->rightChild) {
-            prev = prev->parent;
-        }
-        prev = prev->parent;
-    }
-    else {
-        prev = prev->rightChild;
-        while(prev->leftChild != nullptr) {
-            prev = prev->leftChild;
-        }
-    }
-    return prev->value;
+    root = Merge(p1, p2);
+    return curr->value;
 }
-void SplayTree::HiddenDisplay(Node* node) {
+template <class T> T Treap<T>::Successor(T value) {
+    return value;
+}
+template <> int Treap<int>::Successor(int value) {
+    Node<int> * p1, * p2;
+    Split(root, value, &p1, &p2);
+    Node<int> * curr = p2;
+    if(curr == nullptr) {
+        root = Merge(p1, p2);
+        return value;
+    }
+    while(curr->leftChild != nullptr) {
+        curr = curr->leftChild;
+    }
+    root = Merge(p1, p2);
+    return curr->value;
+}
+template <class T> void Treap<T>::HiddenDisplay(Node<T> * node) {
     if(node == nullptr) {
         return;
     }
@@ -304,9 +220,41 @@ void SplayTree::HiddenDisplay(Node* node) {
     HiddenDisplay(node->rightChild);
     return;
 }
-void SplayTree::Display() {
+template <class T> void Treap<T>::Display() {
     HiddenDisplay(root);
     std::cout << std::endl;
+    return;
+}
+
+template <class T> class TreapSet: public Treap<T> {};
+template <class T> class TreapMultiset: public Treap<T> {
+    protected:
+        using Treap<T>::root;
+        using Treap<T>::Find;
+        using Treap<T>::Split;
+        using Treap<T>::Merge;
+    public:
+        void Insert(T value);
+        void Erase(T value);
+};
+template <class T> void TreapMultiset<T>::Insert(T value) {
+    Node<T> * p1, * p2;
+    Split(root, value, &p1, &p2);
+    p1 = Merge(p1, new Node<T>(value));
+    root = Merge(p1, p2);
+}
+template <class T> void TreapMultiset<T>::Erase(T value) {
+    return;
+}
+template <> void TreapMultiset<int>::Erase(int value) {
+    Node<int> * p1, * p2, * p3;
+    Split(root, value - 1, &p1, &p2);
+    Split(p2, value, &p2, &p3);
+    if(p2 != nullptr) {
+        p1 = Merge(p1, Merge(p2->leftChild, p2->rightChild));
+    }
+    delete p2;
+    root = Merge(p1, p3);
     return;
 }
 
@@ -315,7 +263,7 @@ void SplayTree::Display() {
 int main() {
     freopen("Data.in", "r", stdin);
     freopen("AcceptedRes.out", "w", stdout);
-    String::SplayTree t;
+    String::TreapMultiset <int> t;
     int n;
     cin >> n;
     while(n--) {
@@ -327,7 +275,7 @@ int main() {
             t.Insert(val);
             break;
         case 2:
-            t.Delete(val);
+            t.Erase(val);
             break;
         case 3:
             cout << t.Rank(val) << endl;
