@@ -53,6 +53,7 @@
         "xlocinfo": "cpp",
         "xmemory": "cpp",
         "xstddef": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "fstream": "cpp"
     }
 }
