@@ -7,9 +7,9 @@ int main() {
 	int n;
 	cin >> n;
 	while(n--) {
-		int a, b;
+		long long a, b;
 		cin >> a >> b;
-		int k = abs(a - b);
+		long long k = abs(a - b);
 		if(k) {
 			cout << k << ' ' << min(a % k, k - a % k) << endl;
 		}
