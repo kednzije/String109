@@ -48,8 +48,6 @@ void dfs2(int u) {
 	}
 }
 int main() {
-    freopen("Data.in", "r", stdin);
-    freopen("AcceptedRes.out", "w", stdout);
 	int t; scanf("%d",&t);
 	while (t--) {
 		scanf("%d%d",&n,&m);
