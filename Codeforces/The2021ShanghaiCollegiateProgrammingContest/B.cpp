@@ -17,8 +17,6 @@ ll max(ll a, ll b, ll c) {
 }
 
 int main() {
-	freopen("Data.in", "r", stdin);
-    freopen("AcceptedRes.out", "w", stdout);
 	int n, a, b, c;
 	scanf("%d%d%d%d", &n, &a, &b, &c);
 	for(int s = 1; s <= n; s++) {
