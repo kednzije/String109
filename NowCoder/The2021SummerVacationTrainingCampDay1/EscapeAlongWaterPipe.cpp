@@ -6,7 +6,7 @@
 using namespace std;
 constexpr int MAXN = 1005;
 
-int n, m, stepCnt, endDir, pipes[MAXN][MAXN];
+int n, m, endDir, pipes[MAXN][MAXN];
 bool vis[MAXN][MAXN][4];
 
 int to[4][2] = {
@@ -22,67 +22,73 @@ int mapping[4][4] = {
 	2, -1, 3, 5,
 };
 
-void printStep(int nextDir, int x, int y) {
-	stepCnt++;
-	if(x == 1 && y == 1) {
-		int degree = 0;
-		switch (pipes[1][1])
-		{
-		case 0: case 1: case 2: case 3:
-			degree = ((6 - pipes[1][1]) % 4) * 90;
+void printStep() {
+	int nextDir = 1, x = n, y = m;
+	vector <vector <int>> steps;
+	while(true) {
+		if(x == 1 && y == 1) {
+			int degree = 0;
+			switch (pipes[1][1])
+			{
+			case 0: case 1: case 2: case 3:
+				degree = ((6 - pipes[1][1]) % 4) * 90;
+				break;
+			case 4: case 5:
+				degree = (nextDir + 4 != pipes[1][1]) * 90;
+				break;
+			
+			default:
+				break;
+			}
+			steps.push_back({0, 1, 1});
+			if(degree) {
+				steps.push_back({1, degree, 1, 1});
+			}
 			break;
-		case 4: case 5:
-			degree = (nextDir + 4 != pipes[1][1]) * 90;
-			break;
+		}
 		
-		default:
-			break;
+		int degree = 0;
+		int fromDir = -1;
+		if(x == n && y == m) {
+			fromDir = endDir;
 		}
-		if(degree) {
-			stepCnt++;
-		}
-		cout << stepCnt << endl;
-		if(degree) {
-			cout << "1 " << degree << " 1 1" << endl;
-		}
-		cout << "0 1 1" << endl;
-		return;
-	}
-	
-	int degree = 0;
-	int fromDir = -1;
-	if(x == n && y == m) {
-		fromDir = endDir;
-	}
-	else {
-		for(int i = 0; i < 4; i++) {
-			if(vis[x][y][i]) {
-				if(pipes[x][y] < 4 && (fromDir + nextDir) % 2) {
-					fromDir = i;
-					break;
-				}
-				if(pipes[x][y] >= 4 && fromDir == nextDir) {
-					fromDir = i;
-					break;
+		else {
+			for(int i = 0; i < 4; i++) {
+				if(vis[x][y][i]) {
+					if(pipes[x][y] < 4 && (fromDir + nextDir) % 2) {
+						fromDir = i;
+						break;
+					}
+					if(pipes[x][y] >= 4 && fromDir == nextDir) {
+						fromDir = i;
+						break;
+					}
 				}
 			}
 		}
-	}
-	if(pipes[x][y] < 4) {
-		degree = (mapping[fromDir][nextDir] - pipes[x][y] + 4) % 4 * 90;
-	}
-	else {
-		degree = (mapping[fromDir][nextDir] != pipes[x][y]) * 90;
-	}
-	if(degree) {
-		stepCnt++;
-	}
-	printStep(fromDir, x - to[fromDir][0], y - to[fromDir][1]);
+		if(pipes[x][y] < 4) {
+			degree = (mapping[fromDir][nextDir] - pipes[x][y] + 4) % 4 * 90;
+		}
+		else {
+			degree = (mapping[fromDir][nextDir] != pipes[x][y]) * 90;
+		}
 
-	if(degree) {
-		cout << "1 " << degree << ' ' << x << ' ' << y << endl;
+		steps.push_back({0, x, y});
+
+		if(degree) {
+			steps.push_back({1, degree, x, y});
+		}
+
+		x -= to[fromDir][0], y -= to[fromDir][1], nextDir = fromDir;
 	}
-	cout << "0 " << x << ' ' << y << endl;
+
+	cout << steps.size() << endl;
+	for(int i = steps.size() - 1; i >= 0; i--) {
+		for(int j = 0; j < steps[i].size(); j++) {
+			cout << steps[i][j] << ' ';
+		}
+		cout << endl;
+	}
 }
 
 int main() {
@@ -102,7 +108,7 @@ int main() {
 		que.push({1, {1, 1}});
 		endDir = -1;
 		while(!que.empty()) {
-			pair <int, pair <int, int>> pos = que.front();
+			auto pos = que.front();
 			int x0 = pos.second.first, 
 				y0 = pos.second.second;
 			que.pop();
@@ -144,8 +150,7 @@ int main() {
 		}
 		if(endDir != -1) {
 			cout << "YES" << endl;
-			stepCnt = 0;
-			printStep(1, n, m);
+			printStep();
 		}
 		else {
 			cout << "NO" << endl;
