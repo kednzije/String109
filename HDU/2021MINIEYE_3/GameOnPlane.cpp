@@ -11,17 +11,36 @@
 #include <ctime>
 using namespace std;
 #define pb push_back
-#define mp make_pair
-#define fi first
-#define se second
-typedef int ll;
-typedef pair<ll,ll> pii;
+// #define mp make_pair
+// #define fi first
+// #define se second
+typedef long long ll;
+// typedef pair<ll,ll> pii;
 const ll maxn = 100010;
 const ll INF = 2147483647;
-ll t, n, res[maxn], det[maxn], minn;
-int x_1, y_1, x_2, y_2;
+ll t, n, det[maxn], minn;
+ll x_1, y_1, x_2, y_2;
+
+inline ll gcd(ll a, ll b) {
+	ll r = a % b;
+	while(r) {
+		a = b, b = r, r = a % b;
+	}
+	return b;
+}
+
 struct node{
 	ll a, b;
+	node() {
+		a = b = 0;
+	}
+	node(ll _a, ll _b) {
+		a = _a, b = _b;
+		if(a && b) {
+			int c = gcd(a, b);
+			a /= c, b /= c;
+		}
+	}
 	bool operator < (const node& that) const {
 		return a * that.b < b * that.a;
 	}
@@ -45,9 +64,10 @@ int main()
 		// vector <double> lv;
 		for(int i = 1; i <= n; i++){
 			det[i] = 0;
-			scanf("%d%d%d%d", &x_1, &y_1, &x_2, &y_2);
-			line[i].a = y_2 - y_1;
-			line[i].b = x_2 - x_1;
+			scanf("%lld%lld%lld%lld", &x_1, &y_1, &x_2, &y_2);
+			// line[i].a = y_2 - y_1;
+			// line[i].b = x_2 - x_1;
+			line[i] = node(y_2 - y_1, x_2 - x_1);
 			// if(!m[line[i].k]) lv.pb(line[i].k);
 			// m[line[i].k]++;
 		}
@@ -70,13 +90,12 @@ int main()
 				minn++;
 			}
 			pre += e[i];
-			if(e[i] <= minn) continue;
+			// if(e[i] <= minn) continue;
 		}
 		pre = 0;
 		for(int i = 1; i <= n; i++){
 			pre = max(pre, det[i]);
-			res[i] = i - pre;
-			printf("%d\n", res[i]);
+			printf("%d\n", i - pre);
 		}
 	}
 	// cout << "The run time is:" << (double)clock() /CLOCKS_PER_SEC<< "s" << endl;
