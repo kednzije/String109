@@ -54,9 +54,10 @@ int main() {
 				ans += 2;
 			}
 			else {
+				x++;
 				for(; x < MAXN; x++) {
 					if(findAns(x) != -1) {
-						ans = 2 * x + 2;
+						ans = 2 * x + findAns(x) - 1;
 						break;
 					}
 				}
