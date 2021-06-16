@@ -1,89 +1,61 @@
 #include <iostream>
 #include <cstdio>
 #include <cstring>
-#include <cstdlib>
-#include <ctime>
-#include <algorithm>
 using namespace std;
 constexpr int MAXN = 5005;
 using ll = long long;
 
-ll x[MAXN], y[MAXN];
-inline ll calc_time_2(int i, int j) {
-	return (x[i] - x[j]) * (x[i] - x[j]) + (y[i] - y[j]) * (y[i] - y[j]);
+inline ll min(ll a, ll b) {
+	return a < b ? a : b;
+}
+inline ll max(ll a, ll b) {
+	return a > b ? a : b;
+}
+inline ll sqr(ll k) {
+	return k * k;
 }
 
-int f[MAXN];
-inline int getf(int k) {
-	if(f[k] != k) {
-		f[k] = getf(f[k]);
-	}
-	return f[k];
-}
-inline void merge(int a, int b) {
-	int fa = getf(a), fb = getf(b);
-	if(fa != fb) {
-		if(rand() % 2) {
-			f[fa] = fb;
-		}
-		else {
-			f[fb] = fa;
-		}
-	}
+int n;
+pair <ll, ll> points[MAXN];
+ll dis[MAXN];
+
+inline ll calc_dis(int i, int j) {
+	return sqr(points[i].first - points[j].first) 
+		+ sqr(points[i].second - points[j].second);
 }
 
-struct Time {
-	int i, j;
-	ll dis;
-	Time() {
-		i = j = dis = 0;
+void select(int point_ind, int &min_dis) {
+	dis[point_ind] = -1, min_dis = 0;
+	for(int i = 1; i <= n; i++) {
+		if(dis[i] != -1) {
+			dis[i] = min(dis[i], calc_dis(i, point_ind));
+			if(dis[min_dis] > dis[i]) {
+				min_dis = i;
+			}
+		}
 	}
-	Time(int _i, int _j) {
-		i = _i, j = _j;
-		dis = calc_time_2(i, j);
-	}
-	bool operator < (const Time &that) const {
-		return dis < that.dis;
-	}
-} times[MAXN * MAXN];
+}
 
 int main() {
-	srand(time(NULL));
-
 	int t;
 	scanf("%d", &t);
 	while(t--) {
-		memset(x, 0, sizeof(x)), memset(y, 0, sizeof(y));
-		int n;
 		scanf("%d", &n);
+		dis[0] = LLONG_MAX;
 		for(int i = 1; i <= n; i++) {
-			scanf("%lld%lld", &x[i], &y[i]);
-
-			f[i] = i;
+			scanf("%lld%lld", &points[i].first, &points[i].second);
+			dis[i] = LLONG_MAX;
 		}
 		int cnt = 0;
-		for(int i = 1; i <= n; i++) {
-			for(int j = i + 1; j <= n; j++) {
-				times[++cnt] = Time(i, j);
+		int min_dis = 1;
+		ll max_dis = -1;
+		while(cnt < n) {
+			cnt++;
+			select(min_dis, min_dis);
+			if(cnt < n) {
+				max_dis = max(max_dis, dis[min_dis]);
 			}
 		}
-		sort(times + 1, times + 1 + cnt);
-		cnt = 0;
-		ll min_time = -1;
-		for(int k = 1; ; k++) {
-			int i = times[k].i, j = times[k].j;
-			if(getf(i) != getf(j)) {
-				merge(i, j);
-				cnt++;
-
-				min_time = min_time > times[k].dis ? min_time : times[k].dis;
-			}
-
-			if(cnt == n - 1) {
-				break;
-			}
-		}
-
-		printf("%lld\n", min_time);
+		printf("%lld\n", max_dis);
 	}
 }
