@@ -1,40 +1,36 @@
 #include <iostream>
-#include <cstdio>
-#include <cmath>
+#include <cstring>
 using namespace std;
-const int MAXN = 5005;
-typedef long long ll;
+constexpr int MAXN = 1e4 + 10;
 
-ll dp[2][MAXN][MAXN], ai, bi, ci;
-ll min(ll a, ll b) {
-	return a < b ? a : b;
-}
-ll max(ll a, ll b) {
-	return a > b ? a : b;
-}
-ll max(ll a, ll b, ll c) {
-	return a > b ? (a > c ? a : c) : (b > c ? b : c);
-}
+int n, atk[MAXN];
+bool alive[MAXN];
 
 int main() {
 	freopen("Data.in", "r", stdin);
     freopen("AcceptedRes.out", "w", stdout);
-	int n, a, b, c;
-	scanf("%d%d%d%d", &n, &a, &b, &c);
-	for(int s = 1; s <= n; s++) {
-		int pre = (s + 1) % 2, now = s % 2;
-		scanf("%lld%lld%lld", &ai, &bi, &ci);
-		for(int i = 0; i <= min(s, a); i++) {
-			for(int j = 0; j <= min(s - i, b); j++) {
-				if(s - i - j > c) {
-					continue;
-				}
-				dp[now][i][j] = max(
-					(i > 0 ? dp[pre][i - 1][j] + ai : 0), 
-					(j > 0 ? dp[pre][i][j - 1] + bi : 0), 
-					(s - i - j > 0 ? dp[pre][i][j] + ci : 0));
+	cin >> n;
+	for(int i = 1; i <= n; i++) {
+		cin >> atk[i];
+	}
+	memset(alive, true, sizeof(alive));
+
+	for(int i = 1; i <= n; i++) {
+		int dir = (atk[i] > 0 ? 1 : -1), atkmin = atk[i], atkmax = atk[i];
+		for(int j = i + dir; j >= 1 && j <= n; j += dir) {
+			atkmax = max(atkmax, atk[j]);
+			atkmin = min(atkmin, atk[j]);
+			if(atk[i] * (atkmax + atkmin) <= 0) {
+				alive[i] = false;
+				break;
 			}
 		}
 	}
-	printf("%lld\n", dp[n % 2][a][b]);
+
+	for(int i = 1; i <= n; i++) {
+		if(alive[i]) {
+			cout << atk[i] << ' ';
+		}
+	}
+	cout << endl;
 }

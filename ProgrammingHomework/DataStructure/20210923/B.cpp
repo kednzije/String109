@@ -1,13 +1,10 @@
 #include <iostream>
-#include <cstdlib>
 using namespace std;
 constexpr int MAXN = 1e4 + 10;
 
 int sta[MAXN], stasz;
 
 int main() {
-	freopen("Data.in", "r", stdin);
-    freopen("WrongRes.out", "w", stdout);
 	int n;
 	cin >> n;
 
@@ -26,6 +23,10 @@ int main() {
 			}
 			else if(sta[stasz] + x < 0) {
 				stasz--;
+				if(0 == stasz) {
+					sta[++stasz] = x;
+					break;
+				}
 			}
 			else if(sta[stasz] + x > 0) {
 				break;
