@@ -10,8 +10,6 @@ inline int max(int a, int b) {
 int nums[MAXN], ans[MAXN], sta[MAXN];
 
 int main() {
-	freopen("Data.in", "r", stdin);
-    freopen("AcceptedRes.out", "w", stdout);
 	int n = 0, num;
 	while(cin >> num) {
 		nums[++n] = num;

@@ -1,43 +1,16 @@
-#include <iostream>
-#include <cstdlib>
+#include<iostream>
 using namespace std;
-constexpr int MAXN = 1e4 + 10;
-
-int sta[MAXN], stasz;
-
-int main() {
+int num[100000], stc[100000];
+int main(void) {
 	freopen("Data.in", "r", stdin);
     freopen("WrongRes.out", "w", stdout);
-	int n;
-	cin >> n;
-
-	stasz = 0;
-	for(int i = 1; i <= n; i++) {
-		int x;
-		cin >> x;
-		if(0 == stasz) {
-			sta[++stasz] = x;
-			continue;
-		}
-		while(stasz != 0) {
-			if(sta[stasz] * x > 0 || x > 0) {
-				sta[++stasz] = x;
-				break;
-			}
-			else if(sta[stasz] + x < 0) {
-				stasz--;
-			}
-			else if(sta[stasz] + x > 0) {
-				break;
-			}
-			else {
-				stasz--;
-				break;
-			}
-		}
+	int in, top = 0, cnt;
+	for (cnt = 0; cin >> in; cnt++) {
+		num[cnt] = in;
+		while (top && num[stc[top - 1]] < in) num[stc[--top]] = cnt - stc[top];
+		stc[top++] = cnt;
 	}
-	for(int i = 1; i <= stasz; i++) {
-		cout << sta[i] << ' ';
-	}
-	cout << endl;
+	for (int b = 0; b < top; b++) num[stc[b]] = 0;
+	for (int b = 0; b < cnt; b++) cout << " "[b == 0] << num[b];
+	return 0;
 }
