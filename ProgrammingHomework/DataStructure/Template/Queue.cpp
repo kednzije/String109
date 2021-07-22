@@ -60,19 +60,3 @@ void Queue<T>::pop() {
 		tail = nullptr;
 	}
 }
-
-#include <iostream>
-using namespace std;
-
-int main() {
-	Queue <int> q;
-	q.push(3), q.push(5), q.push(8);
-	q.pop();
-	q.push(1);
-	while(!q.empty()) {
-		cout << q.front() << ' ';
-		q.pop();
-	}
-	q.push(4);
-	cout << q.front();
-}
