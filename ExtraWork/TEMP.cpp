@@ -1,20 +1,12 @@
-#define NULL 0
-struct Node {
-	int val;
-	Node* ls, * rs;
-};
+#include <iostream>
+using namespace std;
 
-int f(int x, Node* node) {
-	if(node == NULL) {
-		return -1;
-	}
-	if(x == node->val) {
-		return 0;
-	}
-	if(x < node->val) {
-		return 2 * f(x, node->ls);
-	}
-	else {
-		return 2 * f(x, node->rs) + 1;
+int main() {
+	for(int i = 0; ; i++) {
+		int tmp = (1 + i * i) % 11;
+		if(tmp == 0 || tmp == 8 || tmp == 9) {
+			cout << i;
+			return 0;
+		}
 	}
 }
