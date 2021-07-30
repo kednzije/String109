@@ -26,18 +26,9 @@ int main() {
 		if(objects[i].weight <= cap) {
 			cout << "Object No." << objects[i].ind
 				<< ": weight " << objects[i].weight 
-				<< ", value " << objects[i].value 
-				<< ", taken " << "100%" << endl;
+				<< ", value " << objects[i].value << endl;
 			tot += objects[i].value;
 			cap -= objects[i].weight;
-		}
-		else {
-			cout << "Object No." << objects[i].ind
-				<< ": weight " << objects[i].weight 
-				<< ", value " << objects[i].value 
-				<< ", taken " << 100.0 * cap / objects[i].weight << '%' << endl;
-			tot += 1.0 * objects[i].value * cap / objects[i].weight;
-			break;
 		}
 	}
 	cout << "Total Value: " << tot << endl;
@@ -48,10 +39,10 @@ Input:
 35 30 60 50 40 10 25
 10 40 30 50 35 40 30
 Output:
-Object No.6: weight 10, value 40, taken 100%
-Object No.2: weight 30, value 40, taken 100%
-Object No.7: weight 25, value 30, taken 100%
-Object No.4: weight 50, value 50, taken 100%
-Object No.5: weight 40, value 35, taken 87.5%
-Total Value: 190.625
+Object No.6: weight 10, value 40
+Object No.2: weight 30, value 40
+Object No.7: weight 25, value 30
+Object No.4: weight 50, value 50
+Object No.1: weight 35, value 10
+Total Value: 170
 */
