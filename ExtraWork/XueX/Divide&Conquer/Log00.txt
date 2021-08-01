@@ -1,0 +1,99 @@
+Size: 100
+Divide&Conquer:
+Max sum of sub-array is [58,100]: 327
+Time used: 50
+Force:
+Max sum of sub-array is [58,100]: 327
+Time used: 44
+Size: 1000
+Divide&Conquer:
+Max sum of sub-array is [69,206]: 515
+Time used: 42
+Force:
+Max sum of sub-array is [69,206]: 515
+Time used: 39
+Size: 10000
+Divide&Conquer:
+Max sum of sub-array is [701,9894]: 3947
+Time used: 54
+Force:
+Max sum of sub-array is [701,9894]: 3947
+Time used: 166
+Size: 100000
+Divide&Conquer:
+Max sum of sub-array is [2437,23477]: 12047
+Time used: 293
+Force:
+Max sum of sub-array is [2437,23477]: 12047
+Time used: 12543
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

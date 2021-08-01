@@ -5,7 +5,7 @@
 using namespace std;
 constexpr int RANGE = 50;
 
-int sizes[] = { 100, 1000 };
+int sizes[] = { 100, 1000, 10000, 100000 };
 #define N (sizeof(sizes) / sizeof(int))
 
 int main() {

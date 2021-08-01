@@ -29,7 +29,7 @@ pair <int, int> maxSum(int l, int r, int &maxsum) {
 		}
 	}
 	pair <int, int> tmp_pair[] = { maxSum(l, mid, tmp_sum[2]), maxSum(mid + 1, r, tmp_sum[3])};
-	maxsum = max(tmp_sum[0] + tmp_sum[1], max(tmp_sum[2], tmp_pos[3]));
+	maxsum = max(tmp_sum[0] + tmp_sum[1], max(tmp_sum[2], tmp_sum[3]));
 	return (tmp_sum[2] > tmp_sum[3] 
 		? (tmp_sum[0] + tmp_sum[1] > tmp_sum[2] ? make_pair(tmp_pos[0], tmp_pos[1]) : tmp_pair[0])
 		: (tmp_sum[0] + tmp_sum[1] > tmp_sum[3] ? make_pair(tmp_pos[0], tmp_pos[1]) : tmp_pair[1]));

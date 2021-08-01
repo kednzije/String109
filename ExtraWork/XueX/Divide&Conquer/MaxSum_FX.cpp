@@ -1,6 +1,6 @@
 #include <iostream>
 using namespace std;
-constexpr int MAXN = 1e3;
+constexpr int MAXN = 1e7;
 inline int max(int a, int b) {
 	return a > b ? a : b;
 }
