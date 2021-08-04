@@ -1,6 +1,11 @@
 #include <stdlib.h>
 #include <time.h>
 
+/**
+ * @brief An algorithm collection for DS course.
+ * 
+ * @tparam T Type of data to be operated.
+ */
 template <typename T>
 class Algorithm {
 public:

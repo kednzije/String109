@@ -1,0 +1,43 @@
+/*
+在矩阵操作中，因为需要对矩阵的维数进行扩展，涉及大量读写操作，这些读写操作都需要大量循环，如果读写次数超出使用Strassen乘法的收益的话，Strassen乘法的速度反而会慢于普通的矩阵乘法。
+*/
+
+Size: 50
+Strassen:
+Time used: 134
+Force:
+Time used: 100
+正在比较文件 res0.txt 和 RES1.TXT
+FC: 找不到差异
+
+Size: 100
+Strassen:
+Time used: 61
+Force:
+Time used: 51
+正在比较文件 res0.txt 和 RES1.TXT
+FC: 找不到差异
+
+Size: 200
+Strassen:
+Time used: 160
+Force:
+Time used: 89
+正在比较文件 res0.txt 和 RES1.TXT
+FC: 找不到差异
+
+Size: 500
+Strassen:
+Time used: 1187
+Force:
+Time used: 703
+正在比较文件 res0.txt 和 RES1.TXT
+FC: 找不到差异
+
+Size: 1000
+Strassen:
+Time used: 8093
+Force:
+Time used: 5254
+正在比较文件 res0.txt 和 RES1.TXT
+FC: 找不到差异
