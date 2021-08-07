@@ -65,6 +65,11 @@
         "xhash": "cpp",
         "xlocmon": "cpp",
         "xloctime": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "locale": "cpp",
+        "stack": "cpp",
+        "unordered_set": "cpp",
+        "xlocbuf": "cpp",
+        "xlocmes": "cpp"
     }
 }
