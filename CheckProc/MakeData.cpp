@@ -9,8 +9,10 @@ using namespace std;
 int main() {
     srand(time(NULL));
     freopen("Data.in", "w", stdout);
-    int n = rand() % 10 + 2;
-    while(n--) {
-        cout << rand() % 10 << ' ';
+    cout << 1 << endl;
+    int n = rand() % 15 + 1, m = rand() % n + rand() % n + 1;
+    cout << n << ' ' << m << endl;
+    for(int i = 1; i <= m; i++) {
+        cout << rand() % n << ' ' << rand() % n << ' ' << rand() % 10 << endl;
     }
 }

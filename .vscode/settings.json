@@ -70,6 +70,7 @@
         "stack": "cpp",
         "unordered_set": "cpp",
         "xlocbuf": "cpp",
-        "xlocmes": "cpp"
+        "xlocmes": "cpp",
+        "*.rh": "cpp"
     }
 }

@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 typedef long long ll;
-constexpr ll MOD = 998244353;
+constexpr ll MOD = 1e9 + 7;
 inline ll add(ll a, ll b) {
 	return ((a % MOD) + (b % MOD)) % MOD;
 }

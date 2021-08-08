@@ -38,7 +38,7 @@ inline ll divi(ll a, ll b) {
 struct Edge {
 	int to, val, nxt;
 } edges[MAXM * 2];
-int head[MAXN];
+int head[MAXN * 2];
 void addEdge(int u, int v, int w, int i) {
 	edges[i] = Edge{ v, w, head[u] };
 	head[u] = i;
@@ -67,6 +67,9 @@ int bfs_from_0() {
 		for(auto pos: vertices[i - 1]) {
 			int tmp_min_val = INT_MAX;
 			for(int ei = head[pos]; ei; ei = edges[ei].nxt) {
+				if(!is_accessible[edges[ei].to]) {
+					continue;
+				}
 				tmp_min_val = min(tmp_min_val, edges[ei].val);
 				if(edges[ei].val < now_min_val) {
 					vertices[i].clear();
@@ -103,8 +106,6 @@ void init() {
 }
 
 int main() {
-	freopen("Data.in", "r", stdin);
-    freopen("WrongRes.out", "w", stdout);
 	int T;
 	cin >> T;
 	for(int ind = 1; ind <= T; ind++) {
@@ -153,13 +154,3 @@ int main() {
 		printf("Case #%d: %lld\n", ind, ans);
 	}
 }
-/*
-1 
-6 6
-0 2 1
-2 3 2
-5 3 3
-4 5 2
-3 4 1
-3 1 3
-*/
