@@ -1,124 +1,57 @@
-#include <iostream>
-#include <stack>
+/*
+      Author:Frozencode
+*/
+#include <bits/stdc++.h>
 using namespace std;
-
-enum Object {
-	NONE = 0,
-	WOLF = 1,
-	SHEEP = 3,
-	PLANT = 6
-};
-
-Object a[] = {
-	WOLF, SHEEP, PLANT
-}, b[] = {
-	NONE, NONE, NONE
-};
-
-stack <Object> sta;
-int vis[2][20][10];
-
-bool dfs(int k, bool a2b) {
-	Object* from = (a2b ? a : b);
-	if(vis[a2b][from[0] + from[1] + from[2]][k == -1 ? 0 : from[k]]) {
-		return false;
-	}
-	vis[a2b][from[0] + from[1] + from[2]][k == -1 ? 0 : from[k]] = true;
-	int to_ind;
-	if(k == -1) {
-		for(int i = 0; i < 3; i++) {
-			for(int j = i + 1; j < 3; j++) {
-				Object x = from[i], y = from[j];
-				if(x > y) {
-					swap(x, y);
-				}
-				if((x == WOLF && y == SHEEP) || (x == SHEEP && y == PLANT)) {
-					return false;
-				}
-			}
-		}
-		sta.push(NONE);
-	}
-	else {
-		int x = (k + 1) % 3, y = 3 - k - x;
-		if(from[x] > from[y]) {
-			swap(x, y);
-		}
-		if((from[x] == WOLF && from[y] == SHEEP) || (from[x] == SHEEP && from[y] == PLANT)) {
-			return false;
-		}
-		sta.push(from[k]);
-		Object* to = (a2b ? b : a);
-		for(int i = 0; i < 3; i++) {
-			if(to[i] == NONE) {
-				swap(to[i], from[k]);
-				to_ind = i;
-				break;
-			}
-		}
-	}
-	bool succ = true;
-	for(int i = 0; i < 3; i++) {
-		if(b[i] == NONE) {
-			succ = false;
-			break;
-		}
-	}
-	if(succ) {
-		return true;
-	}
-	from = (a2b ? b : a);
-	for(int i = 0; i < 3; i++) {
-		if(i != to_ind && from[i] != NONE && dfs(i, !a2b)) {
-			return true;
-		}
-	}
-	if(dfs(-1, !a2b)) {
-		return true;
-	}
-
-	from = (a2b ? a : b);
-	sta.pop();
-	if(k != -1) {
-		swap(from[k], (a2b ? b : a)[to_ind]);
-	}
-	return false;
+#define pb push_back
+#define mp make_pair
+#define fi first
+#define se second
+typedef long long ll;
+typedef pair<ll,ll> pii;
+ll n;
+char ch[3005][3005];
+pii dir[4] = {{0, -1}, {-1, 0}, {0, 1}, {1, 0}};
+char turn(ll x){
+      switch(x){
+            case 0: return 'L';
+            case 1: return 'U';
+            case 2: return 'R';
+            case 3: return 'D';
+            default: return '?';
+      }
 }
-
-void print_ans() {
-	stack <Object> sta_rev;
-	while(!sta.empty()) {
-		sta_rev.push(sta.top());
-		sta.pop();
-	}
-	bool a2b = true;
-	while(!sta_rev.empty()) {
-		cout << (a2b ? "a -> b: " : "b -> a: ");
-		switch (sta_rev.top())
-		{
-		case WOLF:
-			cout << "WOLF" << endl;
-			break;
-		case SHEEP:
-			cout << "SHEEP" << endl;
-			break;
-		case PLANT:
-			cout << "PLANT" << endl;
-			break;
-		default:
-			cout << "NONE" << endl;
-			break;
-		}
-		sta_rev.pop();
-		a2b = !a2b;
-	}
+void dfs(ll x, ll y, ll cnt){
+      //cout << x << " " << y << endl;
+      bool flag = false;
+      int i = cnt;
+      if(ch[x + dir[i].fi][y + dir[i].se] != 'U' && ch[x + dir[i].fi][y + dir[i].se] != 'D' && ch[x + dir[i].fi][y + dir[i].se] != 'L' && ch[x + dir[i].fi][y + dir[i].se] != 'R'){
+            ch[x][y] = turn(i);
+            flag = true;
+            dfs(x + dir[i].fi, y + dir[i].se, i);
+      }
+      else{
+            i = (cnt + 1) % 4;
+            if(ch[x + dir[i].fi][y + dir[i].se] != 'U' && ch[x + dir[i].fi][y + dir[i].se] != 'D' && ch[x + dir[i].fi][y + dir[i].se] != 'L' && ch[x + dir[i].fi][y + dir[i].se] != 'R'){
+                  ch[x][y] = turn(i);
+                  flag = true;
+                  dfs(x + dir[i].fi, y + dir[i].se, i);
+            }
+      }
+      if(!flag) ch[x][y] = 'U';
 }
-
 int main() {
-	for(int i = 0; i < 3; i++) {
-		if(a[i] != NONE && dfs(i, true)) {
-			print_ans();
-			break;
-		}
-	}
+      //freopen("1.in", "w", stdout);
+      cout << 1 << endl;
+      n = 200;
+      cout << n << " " << n << endl;
+      for(int i = 1; i <= n; i++) ch[1][i] = 'D';
+      for(int i = 1; i <= n; i++) ch[n][i] = 'U';
+      for(int i = 2; i < n; i++) ch[i][1] = 'R';
+      for(int i = 2; i < n; i++) ch[i][n] = 'L';
+      dfs(n - 1, n - 1, 0);
+      for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= n; j++) cout << ch[i][j];
+            cout << endl;
+      }
 }

@@ -5,6 +5,9 @@ constexpr ll MOD = 1e9 + 7;
 inline ll add(ll a, ll b) {
 	return ((a % MOD) + (b % MOD)) % MOD;
 }
+inline ll sub(ll a, ll b) {
+	return add(a, MOD - b);
+}
 inline ll mul(ll a, ll b) {
 	return ((a % MOD) * (b % MOD)) % MOD;
 }
