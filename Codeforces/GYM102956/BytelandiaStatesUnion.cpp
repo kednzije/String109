@@ -29,6 +29,12 @@ inline ll divi(ll a, ll b) {
 	return mul(a, rev(b));
 }
 
+inline void swap(ll &a, ll &b) {
+	a ^= b;
+	b ^= a;
+	a ^= b;
+}
+
 ll x[2], y[2];
 inline ll sum_n2(ll n) {
 	return divi(mul(n, mul(n + 1, add(mul(2, n), 1))), 6);
@@ -44,50 +50,77 @@ inline ll calc() {
 	if(x[0] > x[1]) {
 		swap(x[0], x[1]), swap(y[0], y[1]);
 	}
+	bool upon_line[2] = {
+		x[0] < y[0],
+		x[1] < y[1]
+	};
 	if(y[0] <= y[1]) {
-		bool upon_line[2];
-		for(int i = 0; i < 2; i++) {
-			upon_line[i] = (y[i] > x[i]);
-		}
 		if(upon_line[0] ^ upon_line[1]) {
-			if(upon_line[0]) {
-				// x ^ 2
+			if(x[0] > y[0]) {
+				swap(x[0], y[0]);
+			}
+			if(x[1] < y[1]) {
+				swap(x[1], y[1]);
+			}
+			// x
+			ans = add(ans, sum_a2_b2(x[0], x[1]));
+			ans = add(ans, sum_a2_b2(y[0], y[1] - 1));
+			// y
+			ans = add(ans, sum_a2_b2(y[0], y[1]));
+			ans = add(ans, sum_a2_b2(y[0] + 1, y[1]));
+			ans = add(ans, mul(y[0] - x[0], pow(y[0], 2)));
+			ans = add(ans, mul(x[1] - y[1], pow(y[1], 2)));
+		}
+		else {
+			if((upon_line[0] ? (x[1] < y[0]) : (x[0] < y[1])) ^ upon_line[0]) {
+				if(x[0] > y[0]) {
+					swap(x[0], y[0]);
+				}
+				if(x[1] < y[1]) {
+					swap(x[1], y[1]);
+				}
+				// return calc();
+				// x
 				ans = add(ans, sum_a2_b2(x[0], x[1]));
 				ans = add(ans, sum_a2_b2(y[0], y[1] - 1));
-				// y ^ 2
+				// y
 				ans = add(ans, sum_a2_b2(y[0], y[1]));
 				ans = add(ans, sum_a2_b2(y[0] + 1, y[1]));
 				ans = add(ans, mul(y[0] - x[0], pow(y[0], 2)));
 				ans = add(ans, mul(x[1] - y[1], pow(y[1], 2)));
 			}
 			else {
-				// y ^ 2
-				ans = add(ans, sum_a2_b2(y[0], y[1]));
-				ans = add(ans, sum_a2_b2(x[0], x[1] - 1));
-				// x ^ 2
+				if(x[0] > y[0]) {
+					swap(x[0], y[0]), swap(x[1], y[1]);
+				}
+				// x
 				ans = add(ans, sum_a2_b2(x[0], x[1]));
-				ans = add(ans, sum_a2_b2(x[0] + 1, x[1]));
-				ans = add(ans, mul(x[0] - y[0], pow(x[0], 2)));
-				ans = add(ans, mul(y[1] - x[1], pow(x[1], 2)));
+				ans = add(ans, mul(y[1] - y[0], pow(x[1], 2)));
+				// y
+				ans = add(ans, sum_a2_b2(y[0], y[1]));
+				ans = add(ans, mul(x[1] - x[0], pow(y[0], 2)));
 			}
-		}
-		else {
-			ans = add(ans, add(sum_a2_b2(x[0], x[1]), mul(y[1] - y[0], pow(x[upon_line[0]], 2))));
-			ans = add(ans, add(sum_a2_b2(y[0], y[1]), mul(x[1] - x[0], pow(y[!upon_line[0]], 2))));
 		}
 	}
 	else {
-		ans = add(ans, add(sum_a2_b2(x[0], x[1]), mul(y[0] - y[1], pow(x[0], 2))));
-		ans = add(ans, add(sum_a2_b2(y[1], y[0]), mul(x[1] - x[0], pow(y[1], 2))));
+		// x
+		ans = add(ans, sum_a2_b2(x[0], x[1]));
+		ans = add(ans, mul(y[0] - y[1], pow(x[0], 2)));
+		// y
+		ans = add(ans, sum_a2_b2(y[1], y[0]));
+		ans = add(ans, mul(x[1] - x[0], pow(y[1], 2)));
 	}
 	return ans;
 }
 
 int main() {
 	int T;
-	cin >> T;
+	// cin >> T;
+	scanf("%d", &T);
 	while(T--) {
-		cin >> x[0] >> y[0] >> x[1] >> y[1];
-		cout << calc() << endl;
+		// cin >> x[0] >> y[0] >> x[1] >> y[1];
+		scanf("%lld%lld%lld%lld", &x[0], &y[0], &x[1], &y[1]);
+		// cout << calc() << endl;
+		printf("%lld\n", calc());
 	}
 }
