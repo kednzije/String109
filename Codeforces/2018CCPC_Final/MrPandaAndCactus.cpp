@@ -81,10 +81,10 @@ void dfs(int x, int from) {
 #endif
 }
 
-int dp_from[MAXN][MAXK];
+unsigned short dp_from[MAXN][MAXK];
 ll dp[2][MAXK];
 
-int colors[MAXN];
+int *colors = fa;
 void paint(int pos, int color) {
 	colors[pos] = color;
 	for(auto &edge: edges[pos]) {
@@ -100,6 +100,14 @@ int main() {
 	for(int ind = 1; ind <= T; ind++) {
 		// cin >> n >> m >> k;
 		scanf("%d%d%d", &n, &m, &k);
+		if(m == 0) {
+			printf("Case %d: 0\n", ind);
+			for(int i = 1; i <= n; i++) {
+				// cout << min(i, k) << ' ';
+				printf("%d ", min(i, k));
+			}
+			continue;
+		}
 
 		for(int i = 1; i <= n; i++) {
 			edges[i].clear();
@@ -140,6 +148,7 @@ int main() {
 		for(int i = 1; i <= cnt; i++) {
 			int now = i % 2, pre = (i + 1) % 2;
 			dp[now][0] = LLONG_MAX / 2, dp[now][1] = 0;
+			dp_from[i][0] = 0, dp_from[i][1] = 1;
 			for(int j = 2; j <= k; j++) {
 				dp[now][j] = dp[pre][j];
 				dp_from[i][j] = j;
@@ -171,7 +180,7 @@ int main() {
 			edges[i].clear();
 		}
 		int mov_j = k;
-		for(int i = cnt; i >= 1; i--, mov_j = dp_from[i][mov_j]) {
+		for(int i = cnt; i >= 1; mov_j = dp_from[i][mov_j], i--) {
 			if(parts[i].size() == 1) {
 				if(dp_from[i][mov_j] == mov_j) {
 					edges[parts[i][0].from].push_back(Edge{ parts[i][0].to, 1 });
@@ -179,14 +188,14 @@ int main() {
 				}
 			}
 			else {
-				int len = mov_j - dp[i][mov_j];
-				for(int j = (len != 0 ? len + 1 : 0); j < edges[i].size(); j++) {
+				int len = mov_j - dp_from[i][mov_j];
+				for(int j = (len != 0 ? len + 1 : 0); j < parts[i].size(); j++) {
 					edges[parts[i][j].from].push_back(Edge{ parts[i][j].to, 1 });
 					edges[parts[i][j].to].push_back(Edge{ parts[i][j].from, 1 });
 				}
 			}
 		}
-		memset(colors, 0, sizeof(colors));
+		memset(colors, 0, sizeof(fa)); // 'fa' is used for colors
 		int color_ind = 0;
 		for(int i = 1; i <= n; i++) {
 			if(!colors[i]) {
@@ -214,7 +223,7 @@ int main() {
 3 4 8
 2 4 9
 
-5 6 10
+5 6 1
 1 2 1
 1 3 2
 2 3 3

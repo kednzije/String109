@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 using namespace std;
-const double eps = 0.001;
+const double EPS = 0.001;
 inline double Pow(double base, int expo) {
     double res = 1.0;
     for(int i = 1; i <= expo; i++) {
@@ -21,7 +21,7 @@ double calc(double x) {
 }
 double Solve(double l, double r) {
     double mid = (l + r) / 2;
-    if(Abs(calc(mid)) < eps) {
+    if(Abs(calc(mid)) < EPS) {
         return mid;
     }
     else if(calc(mid) > 0) {

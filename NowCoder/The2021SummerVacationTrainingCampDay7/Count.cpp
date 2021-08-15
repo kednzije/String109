@@ -7,14 +7,14 @@
 #include <algorithm>
 using namespace std;
 
-const int maxn=2e6+5;
+const int MAXN=2e6+5;
 const double pi=3.1415926535898;
-int t, n, m, len=1, l, r[maxn*2];
+int t, n, m, len=1, l, r[MAXN*2];
 
 struct Cpx{  //复数
     double x, y;
     Cpx (double t1=0, double t2=0){ x=t1, y=t2; }
-}A[maxn*2], B[maxn*2], C[maxn*2];
+}A[MAXN*2], B[MAXN*2], C[MAXN*2];
 Cpx operator +(Cpx a, Cpx b){ return Cpx(a.x+b.x, a.y+b.y); }
 Cpx operator -(Cpx a, Cpx b){ return Cpx(a.x-b.x, a.y-b.y); }
 Cpx operator *(Cpx a, Cpx b){ return Cpx(a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x); }

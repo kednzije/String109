@@ -9,14 +9,14 @@ using namespace std;
 #define se second
 typedef long long ll;
 typedef pair<int, int> pii;
-const int maxn = 100010;
+const int MAXN = 100010;
 const int INF = 2147483647;
-int n, m, k, a[maxn], p1, p2;
+int n, m, k, a[MAXN], p1, p2;
 ll res;
 struct node
 {
 	int minn, maxx;
-} s[maxn << 2];
+} s[MAXN << 2];
 inline int ls(int p) { return p << 1; }
 inline int rs(int p) { return p << 1 | 1; }
 // #define ls(p) (p << 1)
