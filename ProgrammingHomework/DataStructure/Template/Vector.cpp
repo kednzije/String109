@@ -11,6 +11,7 @@ public:
 	~Vector();
 	bool empty() const;
 	size_t size() const;
+	Vector<T>& operator =(const Vector<T>& other);
 	T& operator [](size_t);
 	const T& operator [](size_t) const;
 	void push_back(const T&);
@@ -19,10 +20,14 @@ public:
 	const T& front() const;
 	T& back();
 	const T& back() const;
+	T* data();
+	const T* data() const;
+	void reverse(size_t, size_t);
 	void clear();
 private:
 	T *vec;
 	size_t vec_size, max_size;
+	void swap(T&, T&);
 };
 
 template <typename T>
@@ -69,12 +74,21 @@ size_t Vector <T>::size() const {
 	return vec_size;
 }
 template <typename T>
-T& operator [](size_t i) {
+Vector <T>& Vector <T>::operator =(const Vector<T>& other) {
+	delete[] vec;
+	vec = new T[other.max_size];
+	vec_size = other.vec_size, max_size = other.max_size;
+	for(int i = 0; i < vec_size; i++) {
+		vec[i] = other[i];
+	}
+}
+template <typename T>
+T& Vector<T>::operator [](size_t i) {
 	assert(i < vec_size);
 	return vec[i];
 }
 template <typename T>
-const T& operator [](size_t i) const {
+const T& Vector<T>::operator [](size_t i) const {
 	assert(i < vec_size);
 	return vec[i];
 }
@@ -116,7 +130,28 @@ const T& Vector <T>::back() const {
 	return vec[vec_size - 1];
 }
 template <typename T>
+T* Vector <T>::data() {
+	return vec;
+}
+template <typename T>
+const T* Vector <T>::data() const {
+	return vec;
+}
+template <typename T>
+void Vector <T>::reverse(size_t l, size_t r) {
+	assert(l <= r), assert(l >= 0), assert(r < vec_size);
+	while(l < r) {
+		swap(vec[l], vec[r]);
+	}
+}
+template <typename T>
 void Vector <T>::clear() {
 	memset(vec, 0, sizeof(T) * vec_size);
 	vec_size = 0;
+}
+template <typename T>
+void Vector <T>::swap(T& a, T& b) {
+	static swap_tmp = a;
+	a = b;
+	b = swap_tmp;
 }
