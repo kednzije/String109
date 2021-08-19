@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <stdlib.h>
+#include <string.h>
 
 template <typename T>
 class Vector {
@@ -81,6 +81,7 @@ Vector <T>& Vector <T>::operator =(const Vector<T>& other) {
 	for(int i = 0; i < vec_size; i++) {
 		vec[i] = other[i];
 	}
+	return (*this);
 }
 template <typename T>
 T& Vector<T>::operator [](size_t i) {
@@ -140,8 +141,9 @@ const T* Vector <T>::data() const {
 template <typename T>
 void Vector <T>::reverse(size_t l, size_t r) {
 	assert(l <= r), assert(l >= 0), assert(r < vec_size);
-	while(l < r) {
+	while(l <= r) {
 		swap(vec[l], vec[r]);
+		l++, r--;
 	}
 }
 template <typename T>
@@ -151,7 +153,56 @@ void Vector <T>::clear() {
 }
 template <typename T>
 void Vector <T>::swap(T& a, T& b) {
-	static swap_tmp = a;
+	static T swap_tmp;
+	swap_tmp = a;
 	a = b;
 	b = swap_tmp;
+}
+
+#include <iostream>
+using namespace std;
+
+int main() {
+	Vector <int> a;
+	Vector <int> b(10, 5);
+	Vector <int> c(b);
+	cout << "a is empty?" << endl << (a.empty() ? "yes" : "no") << endl;
+	a.push_back(90);
+	for(int i = 1; i <= 4; i++) {
+		a.push_back(i);
+	}
+	cout << "elements of a: " << endl;
+	auto print = [=](const Vector<int>& vec) {
+		for(int i = 0; i < vec.size(); i++) {
+			cout << vec[i] << ' ';
+		}
+		cout << endl;
+	};
+	print(a);
+	// cout << "elements of b:" << endl;
+	// print(b);
+	// cout << "elements of c:" << endl;
+	// print(c);
+	// b.pop_back();
+	// cout << "elements of b:" << endl;
+	// print(b);
+	// cout << "elements of c:" << endl;
+	// print(c);
+	c = a;
+	a.pop_back();
+	cout << "elements of c:" << endl;
+	print(c);
+	cout << "front of c:" << endl;
+	cout << c.front() << endl;
+	cout << "back of c:" << endl;
+	cout << c.back() << endl;
+
+	// c.reverse(0, c.size() - 1);
+	c.clear();
+
+	int* arr = c.data();
+	for(int i = 0; i < c.size(); i++) {
+		cout << arr[i] << ' ';
+	}
+	cout << endl;
 }
