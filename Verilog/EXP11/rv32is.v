@@ -47,8 +47,111 @@ assign ra = instr[19:15];
 assign rb = instr[24:20];
 assign rw = instr[11:7];
 
-ContrGen contrgen(
-	
+ImmGen immgen(
+	.instr_31_7(instr[31:7]), 
+	.extop(extop), 
+	.imm(imm)
 );
+
+ContrGen contrgen(
+	.op(op),
+	.func3(func3),
+	.func7(func7),
+	.extop(extop),
+	.regwr(regwr),
+	.ALUAsrc(ALUAsrc),
+	.ALUBsrc(ALUBsrc),
+	.ALUctr(ALUctr),
+	.branch(branch),
+	.mem2reg(mem2reg),
+	.memwr(memwr),
+	.memop(memop)
+);
+
+RegFile myregfile(
+	.wrclk(~clock), 
+	.regwr(regwr), 
+	.ra(ra), 
+	.rb(rb), 
+	.rw(rw), 
+	.busW(busW), 
+	.busA(busA), 
+	.busB(busB)
+);
+
+Mux2 mux2_ALUAsrc(
+	.selector(ALUAsrc),
+	.input0(busA),
+	.input1(pc),
+	.data(alua)
+);
+
+Mux4 mux4_ALUBsrc(
+	.selector(ALUBsrc),
+	.input0(busB),
+	.input1(imm),
+	.input2(32'd4),
+	.input3(32'd0),
+	.data(alub)
+);
+
+ALU alu(
+	.dataa(alua),
+	.datab(alub),
+	.ALUctr(ALUctr),
+	.less(less),
+	.zero(zero),
+	.aluresult(aluresult)
+);
+
+BranchCond branchcond(
+	.branch(branch), 
+	.zero(zero), 
+	.less(less), 
+	.pcAsrc(pcAsrc), 
+	.pcBsrc(pcBsrc)
+);
+
+Mux2 mux2_pcAsrc(
+	.selector(pcAsrc),
+	.input0(32'd4),
+	.input1(imm),
+	.data(pcA)
+);
+
+Mux2 mux2_pcBsrc(
+	.selector(pcBsrc),
+	.input0(pc),
+	.input1(busA),
+	.data(pcB)
+);
+
+assign nxtpc = pcA + pcB;
+assign imemaddr = nxtpc;
+assign imemclk = ~clock;
+
+assign dmemaddr = aluresult;
+assign dmemdatain = busB;
+assign dmemop = memop;
+assign dmemwe = memwr;
+assign dmemrdclk = clock;
+assign dmemwrclk = ~clock;
+Mux2 mux2_regwr(
+	.selector(mem2reg),
+	.input0(aluresult),
+	.input1(dmemdataout),
+	.data(busW)
+);
+
+assign dbgdata = pc;
+
+always @(posedge clock) begin
+	if(reset) begin
+		pc = 0;
+	end
+	else begin
+		pc = nxtpc;
+	end
+end
 
 endmodule // rv32is

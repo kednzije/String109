@@ -1,3 +1,6 @@
+`include "Verilog/EXP11/Adder.v"
+`include "Verilog/EXP11/Shifter.v"
+
 module ALU (
 	input 		[31:0] 	dataa,
 	input 		[31:0] 	datab,
@@ -78,58 +81,3 @@ always @(*) begin
 end
 
 endmodule //ALU
-
-module Adder (
-	input 			[31:0]	dataa,
-	input 			[31:0] 	datab,
-	input 					add_or_sub,
-	output 	reg 	[31:0] 	result,
-	output 	reg 			CF,
-	output 	reg 			OF,
-	output 	reg 			ZF,
-	output 	reg 			SF
-);
-
-reg [31:0] datab_xor, result_tmp;
-reg carry_n, carry_n_1;
-
-always @(*) begin
-	datab_xor = {32{add_or_sub}} ^ datab;
-
-	{carry_n, result} = dataa[31:0] + datab[31:0] + add_or_sub;
-	{carry_n_1, result_tmp} = dataa[30:0] + datab[30:0] + add_or_sub;
-
-	CF = carry_n ^ add_or_sub;
-	OF = carry_n ^ carry_n_1;
-	ZF = ~(|result);
-	SF = result[31];
-end
-
-endmodule //Adder
-
-module Shifter (
-	input 			[31:0]	dataa,
-	input 			[31:0] 	datab,
-	input 					l_or_r,
-	input 					a_or_h,
-	output 	reg 	[31:0] 	result
-);
-
-always @(*) begin
-	casex ({a_or_h, l_or_r})
-		2'bx0: begin
-			result = dataa << datab[4:0];
-		end
-		2'b01: begin
-			result = dataa >>> datab[4:0];
-		end
-		2'b11: begin
-			result = dataa >> datab[4:0];
-		end
-		default: begin
-			result = 32'bx;
-		end	
-	endcase
-end
-
-endmodule //Shifter
