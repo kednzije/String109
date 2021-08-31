@@ -49,6 +49,7 @@ void Algorithm<T>::quick_sort(T* arr, const unsigned int len) {
 }
 
 #include <iostream>
+#include <cstring>
 using namespace std;
 constexpr int MAXN = 1e5 + 10;
 
@@ -101,14 +102,48 @@ int main() {
 			break;
 		}
 	}
-	cout << all_survive;
 	if(all_survive) {
-		cout << endl;
+		cout << all_survive << endl;
 		for(int i = 1; i <= n; i++) {
 			cout << ans[i];
 			if(i < n) {
 				cout << ' ';
 			}
+		}
+	}
+	else {
+		all_survive = true;
+		memset(vis, false, sizeof(vis));
+		for(int i = n; i >= 1; i--) {
+			if(vis[i]) {
+				continue;
+			}
+			static int index[2];
+			index[0] = find_index(1, n, a - nums[i].first), index[1] = find_index(1, n, b - nums[i].first);
+			if(index[1] != -1 && !vis[index[1]]) {
+				ans[nums[i].second] = ans[nums[index[1]].second] = 1;
+				vis[i] = vis[index[1]] = true;
+			}
+			else if(index[0] != -1 && !vis[index[0]]) {
+				ans[nums[i].second] = ans[nums[index[0]].second] = 0;
+				vis[i] = vis[index[0]] = true;
+			}
+			else {
+				all_survive = false;
+				break;
+			}
+		}
+		if(all_survive) {
+			cout << all_survive << endl;
+			for(int i = 1; i <= n; i++) {
+				cout << ans[i];
+				if(i < n) {
+					cout << ' ';
+				}
+			}
+		}
+		else {
+			cout << all_survive;
 		}
 	}
 }
