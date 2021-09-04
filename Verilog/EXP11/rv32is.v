@@ -1,3 +1,11 @@
+`include "Verilog/EXP11/ImmGen.v"
+`include "Verilog/EXP11/ContrGen.v"
+`include "Verilog/EXP11/RegFile.v"
+`include "Verilog/EXP11/Mux2.v"
+`include "Verilog/EXP11/Mux4.v"
+`include "Verilog/EXP11/ALU.v"
+`include "Verilog/EXP11/BranchCond.v"
+
 module rv32is(
 	input 			clock,
 	input 			reset,
@@ -14,7 +22,8 @@ module rv32is(
 	output 	[31:0] 	dbgdata
 );
 
-reg 	[31:0] 	pc, pcA, pcB, nxtpc;
+reg 	[31:0] 	pc;
+wire 	[31:0]	pcA, pcB, nxtpc;
 
 wire 	[31:0] 	instr;
 wire 	[6:0] 	op;
@@ -81,8 +90,8 @@ RegFile myregfile(
 
 Mux2 mux2_ALUAsrc(
 	.selector(ALUAsrc),
-	.input0(busA),
-	.input1(pc),
+	.input0(pc),
+	.input1(busA),
 	.data(alua)
 );
 
@@ -121,8 +130,8 @@ Mux2 mux2_pcAsrc(
 
 Mux2 mux2_pcBsrc(
 	.selector(pcBsrc),
-	.input0(pc),
-	.input1(busA),
+	.input0(busA),
+	.input1(pc),
 	.data(pcB)
 );
 
