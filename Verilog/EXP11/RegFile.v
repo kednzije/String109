@@ -15,9 +15,9 @@ assign busA = regs[ra];
 assign busB = regs[rb];
 
 always @(posedge wrclk) begin
-	regs[0] = 0;
+	regs[0] <= 0;
 	if(regwr && rw != 0) begin
-		regs[rw] = busW;		
+		regs[rw] <= busW;		
 	end
 end
 

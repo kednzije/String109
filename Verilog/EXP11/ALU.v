@@ -1,5 +1,5 @@
-`include "Verilog/EXP11/Adder.v"
-`include "Verilog/EXP11/Shifter.v"
+`include "../Adder.v"
+`include "../Shifter.v"
 
 module ALU (
 	input 		[31:0] 	dataa,

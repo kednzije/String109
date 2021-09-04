@@ -1,10 +1,10 @@
-`include "Verilog/EXP11/ImmGen.v"
-`include "Verilog/EXP11/ContrGen.v"
-`include "Verilog/EXP11/RegFile.v"
-`include "Verilog/EXP11/Mux2.v"
-`include "Verilog/EXP11/Mux4.v"
-`include "Verilog/EXP11/ALU.v"
-`include "Verilog/EXP11/BranchCond.v"
+`include "../ImmGen.v"
+`include "../ContrGen.v"
+`include "../RegFile.v"
+`include "../Mux2.v"
+`include "../Mux4.v"
+`include "../ALU.v"
+`include "../BranchCond.v"
 
 module rv32is(
 	input 			clock,
@@ -78,7 +78,7 @@ ContrGen contrgen(
 );
 
 RegFile myregfile(
-	.wrclk(~clock), 
+	.wrclk(clock), 
 	.regwr(regwr), 
 	.ra(ra), 
 	.rb(rb), 
@@ -90,8 +90,8 @@ RegFile myregfile(
 
 Mux2 mux2_ALUAsrc(
 	.selector(ALUAsrc),
-	.input0(pc),
-	.input1(busA),
+	.input0(busA),
+	.input1(pc),
 	.data(alua)
 );
 
@@ -114,10 +114,10 @@ ALU alu(
 );
 
 BranchCond branchcond(
-	.branch(branch), 
+	.branch(branch & 3'b000), 
 	.zero(zero), 
 	.less(less), 
-	.pcAsrc(pcAsrc), 
+	.pcAsrc(pcAsrc),
 	.pcBsrc(pcBsrc)
 );
 
@@ -130,8 +130,8 @@ Mux2 mux2_pcAsrc(
 
 Mux2 mux2_pcBsrc(
 	.selector(pcBsrc),
-	.input0(busA),
-	.input1(pc),
+	.input0(pc),
+	.input1(busA),
 	.data(pcB)
 );
 

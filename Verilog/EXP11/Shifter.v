@@ -12,7 +12,7 @@ always @(*) begin
 			result = dataa << datab[4:0];
 		end
 		2'b01: begin
-			result = dataa >>> datab[4:0];
+			result = (dataa >> datab[4:0]) | ({32{dataa[31]}} << (32 - datab[4:0]));
 		end
 		2'b11: begin
 			result = dataa >> datab[4:0];
