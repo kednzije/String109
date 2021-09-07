@@ -31,7 +31,7 @@ module rv32is_test;
         $display("start a test for Module RV32IS."); 	// 打印开始标记
         $dumpfile("rv32is_wave.vcd");                  // 指定记录模拟波形的文件
         $dumpvars(0, rv32is_test);                     // 指定记录的模块层级
-		clock <= 1;
+		clock <= 0;
 		reset <= 1;
 		dmemdataout <= 0;
         #6000 $finish;                                  // 6000个单位时间后结束模拟
@@ -47,7 +47,9 @@ module rv32is_test;
 
     always begin
 		#40 imemdataout <= 32'h06400313; // x6 = 100
+		#40 imemdataout <= 32'h00602023; // watch x6
 		#40 imemdataout <= 32'h01400393; // x7 = 20
+		#40 imemdataout <= 32'h00702023; // watch x7
 		#40 imemdataout <= 32'h00730e33; // x28 = x6 + x7;
 		#40 imemdataout <= 32'h00602023; // watch x6
 		#40 imemdataout <= 32'h00702023; // watch x7

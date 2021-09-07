@@ -39,12 +39,12 @@ always @(*) begin
 		end
 		4'b0010: begin
 			zero = ZF;
-			less = SF ^ OF;
+			less = (SF ^ OF) & ~ZF;
 			aluresult = less;
 		end
 		4'b1010: begin
 			zero = ZF;
-			less = CF;
+			less = CF & ~ZF;
 			aluresult = less;
 		end
 		4'bx011: begin

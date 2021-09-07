@@ -154,12 +154,12 @@ Mux2 mux2_regwr(
 
 assign dbgdata = pc;
 
-always @(posedge clock) begin
+always @(negedge clock) begin
 	if(reset) begin
-		pc = 0;
+		pc <= 0;
 	end
 	else begin
-		pc = nxtpc;
+		pc <= nxtpc;
 	end
 end
 
