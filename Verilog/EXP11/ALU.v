@@ -26,7 +26,7 @@ Shifter shifter(
 	.dataa(dataa),
 	.datab(datab),
 	.l_or_r(ALUctr[2]), // Left: x001; Right: 0101, 1101
-	.a_or_h(ALUctr[3]), // Arithmetic: 0101; Logical: 1101
+	.a_or_h(~ALUctr[3]), // Arithmetic: 1101; Logical: 0101
 	.result(result_tmp[1])
 );
 

@@ -11,6 +11,10 @@ module RegFile (
 
 reg [31:0] regs[31:0];
 
+initial begin
+	regs[0] = 0;
+end
+
 assign busA = regs[ra];
 assign busB = regs[rb];
 

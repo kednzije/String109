@@ -78,7 +78,7 @@ ContrGen contrgen(
 );
 
 RegFile myregfile(
-	.wrclk(clock), 
+	.wrclk(~clock), 
 	.regwr(regwr), 
 	.ra(ra), 
 	.rb(rb), 
@@ -114,7 +114,7 @@ ALU alu(
 );
 
 BranchCond branchcond(
-	.branch(branch & 3'b000), 
+	.branch(branch), 
 	.zero(zero), 
 	.less(less), 
 	.pcAsrc(pcAsrc),
@@ -135,7 +135,7 @@ Mux2 mux2_pcBsrc(
 	.data(pcB)
 );
 
-assign nxtpc = pcA + pcB;
+assign nxtpc = reset ? 32'b0 : (pcA + pcB);
 assign imemaddr = nxtpc;
 assign imemclk = ~clock;
 

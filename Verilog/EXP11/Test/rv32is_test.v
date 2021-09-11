@@ -46,13 +46,14 @@ module rv32is_test;
 	end
 
     always begin
-		#40 imemdataout <= 32'h06400313; // x6 = 100
-		#40 imemdataout <= 32'h00602023; // watch x6
-		#40 imemdataout <= 32'h01400393; // x7 = 20
-		#40 imemdataout <= 32'h00702023; // watch x7
-		#40 imemdataout <= 32'h00730e33; // x28 = x6 + x7;
-		#40 imemdataout <= 32'h00602023; // watch x6
-		#40 imemdataout <= 32'h00702023; // watch x7
+		imemdataout <= 32'h06400313; #40; // x6 = 100
+		imemdataout <= 32'h00602023; #40; // watch x6
+		imemdataout <= 32'h01400393; #40; // x7 = 20
+		imemdataout <= 32'h00702023; #40; // watch x7
+		imemdataout <= 32'h00730e33; #40; // x28 = x6 + x7;
+		imemdataout <= 32'h00602023; #40; // watch x6
+		imemdataout <= 32'h00702023; #40; // watch x7
+		imemdataout <= 32'h00639463; #40; // if(x6 != x7) PC = PC + 8
     end
 
 endmodule //clock_pulse
