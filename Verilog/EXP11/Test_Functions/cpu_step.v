@@ -167,7 +167,7 @@ endtask
 
 	
 initial begin:TestBench
-	$display("start a standard test for Module RV32IS."); 	// 打印开始标记
+	$display("start a function test for Module RV32IS."); 	// 打印开始标记
 	$dumpfile("rv32is_wave.vcd");                  // 指定记录模拟波形的文件
 	$dumpvars(0, cpu_single_vlg_tst);                     // 指定记录的模块层级
     #800
