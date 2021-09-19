@@ -27,7 +27,7 @@ assign ALUBsrc[0] = (~op[6] & (~op[5] | ~op[4]) & ~op[3] & ~op[2]) | (~op[6] & o
 assign ALUctr = (op[4] & ~op[3] & op[2])
 					? (op[5] ? 4'b0011 : 4'b0000)
 					: ((~op[6] & ~op[5] & op[4] & ~op[3] & ~op[2])	
-						? (~(&func3[2:0])
+						? (~(|func3[2:0])
 							? 4'b0000
 							: ((~func3[2] & func3[1])
 								? {func3[0], 3'b010}

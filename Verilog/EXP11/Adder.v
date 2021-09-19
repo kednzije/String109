@@ -9,19 +9,21 @@ module Adder (
 	output 	reg 			SF
 );
 
-reg [31:0] datab_xor, result_tmp;
+reg [31:0] datab_xor, datab_xor_tmp;
 reg carry_n, carry_n_1;
 
 always @(*) begin
-	datab_xor = ({32{add_or_sub}} ^ datab[31:0]) + add_or_sub;
+	// datab_xor = ({32{add_or_sub}} ^ datab[31:0]) + add_or_sub;
+	datab_xor = {32{add_or_sub}} ^ datab[31:0];
+	datab_xor_tmp = {32{add_or_sub}} ^ datab[31:0] + add_or_sub;
 
-	{carry_n, result} = dataa[31:0] + datab_xor[31:0];
-	{carry_n_1, result_tmp} = dataa[30:0] + datab_xor[30:0];
+	{carry_n, result} = dataa[31:0] + datab_xor[31:0] + add_or_sub;
+	// {carry_n_1, result_tmp} = dataa[30:0] + datab_xor[30:0];
 
 	CF = carry_n ^ add_or_sub;
 	// OF = carry_n ^ carry_n_1;
 	// OF = (dataa[31] & datab[31]) ^ result[31];
-	OF = (dataa[31] == datab_xor[31]) && (dataa[31] != result[31]);
+	OF = (dataa[31] == datab_xor_tmp[31]) && (dataa[31] != result[31]);
 	ZF = ~(|result[31:0]);
 	SF = result[31];
 end
