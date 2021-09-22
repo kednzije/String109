@@ -2,6 +2,7 @@
 #include <queue>
 #include <cstdio>
 #include <cstring>
+#include <algorithm>
 using namespace std;
 constexpr int MAXN = 1e5 + 50;
 constexpr int MAXM = 1e5 + 50;
@@ -94,9 +95,17 @@ int main() {
 			break;
 		}
 	}
-	for(register int i = 1; i <= n; i++) {
+	for(register int i = n; i >= 1; i--) { // if use 1 ~ n, it will TLE. But random permutation will also TLE.
 		add_edge(0, i, 1);
 	}
+
+	// for(int i = 1; i <= n; i++) {
+	// 	cnt[i] = i;
+	// }
+	// random_shuffle(cnt + 1, cnt + 1 + n);
+	// for(register int i = 1; i <= n; i++) {
+	// 	add_edge(0, cnt[i], 1);
+	// }
 
 	if(!run_SPFA(0)) {
 		ans = -1;
