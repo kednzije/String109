@@ -11,7 +11,7 @@ inline ll sub(ll a, ll b) {
 inline ll mul(ll a, ll b) {
 	return ((a % MOD) * (b % MOD)) % MOD;
 }
-inline ll pow(ll a, ll b) {
+inline ll pwr(ll a, ll b) {
 	ll res = 1;
 	while(b) {
 		if(b & 1) {
@@ -22,14 +22,14 @@ inline ll pow(ll a, ll b) {
 	return res;
 }
 inline ll rev(ll a) {
-	return pow(a, MOD - 2);
+	return pwr(a, MOD - 2);
 }
-inline ll divi(ll a, ll b) {
+inline ll dvd(ll a, ll b) {
 	return mul(a, rev(b));
 }
 
 int main() {
 	ll a, b;
 	cin >> a >> b;
-	cout << divi(a, b) << endl;
+	cout << dvd(a, b) << endl;
 }
