@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unordered_map>
 using namespace std;
 
 struct A {
@@ -9,6 +10,7 @@ struct A {
 };
 
 int main() {
+      unordered_map <int, int> m;
       try {
             A *x = new A;
             x->a = 9;
