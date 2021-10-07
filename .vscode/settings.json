@@ -71,6 +71,7 @@
         "unordered_set": "cpp",
         "xlocbuf": "cpp",
         "xlocmes": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "*.tcc": "cpp"
     }
 }

@@ -36,8 +36,6 @@ constexpr ll MAXN = 1e7 + 50;
 int buckets[MAXN];
 
 int main() {
-	freopen("Data.in", "r", stdin);
-    freopen("WrongRes.out", "w", stdout);
 	int n, m, num, now_ind = -1, now_num = -1;
 	// cin >> m >> n;
 	// scanf("%d%d", &m, &n);
@@ -50,15 +48,12 @@ int main() {
 
 		// int k = (i + m - 1) / m; // select the kth maximum num
 		
-		if(now_num == -1) {
+		if(i == 1) {
 			now_num = num, now_ind = 1;
 		}
 		else {
 			if(i % m == 1) { // last selected num is the (k - 1)th
-				if(num == now_num) {
-					now_ind++;
-				}
-				else if(num < now_num) {
+				if(num <= now_num) {
 					now_ind++;
 					if(now_ind > buckets[now_num]) {
 						while(buckets[--now_num] == 0);
@@ -67,7 +62,7 @@ int main() {
 				}
 			}
 			else { // last selected num is the kth
-				if(now_num < num) {
+				if(num > now_num) {
 					now_ind--;
 					if(now_ind == 0) {
 						while(buckets[++now_num] == 0);

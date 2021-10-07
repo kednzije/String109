@@ -9,7 +9,13 @@ using namespace std;
 int main() {
     srand(time(NULL));
     freopen("Data.in", "w", stdout);
-    cout << rand() % 100 + 1 << ' ' << rand() % 100 + 1 << endl;
+    int n = 500000, m = rand() % 5 + 1;
+    // cout << n << ' ' << m << endl;
+    printf("%d %d\n", n, m);
+    for(int i = 1; i <= n; i++) {
+        // cout << rand() % 3000 + 1 << ' ';
+        printf("%d ", rand() % 3000 + 1);
+    }
 }
 
 // #include<bits/stdc++.h>
