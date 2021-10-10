@@ -40,7 +40,7 @@ int main() {
 	// cin >> m >> n;
 	// scanf("%d%d", &m, &n);
 	m = input(), n = input();
-	for(int i = 1; i <= n; i++) {
+	for(int i = 0; i < n; i++) { // Why i can't begin from 1 ??
 		// cin >> num;
 		// scanf("%d", &num);
 		num = input();
@@ -48,11 +48,11 @@ int main() {
 
 		// int k = (i + m - 1) / m; // select the kth maximum num
 		
-		if(i == 1) {
+		if(i == 0) {
 			now_num = num, now_ind = 1;
 		}
 		else {
-			if(i % m == 1) { // last selected num is the (k - 1)th
+			if(i % m == 0) { // last selected num is the (k - 1)th
 				if(num <= now_num) {
 					now_ind++;
 					if(now_ind > buckets[now_num]) {

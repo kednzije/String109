@@ -37,14 +37,14 @@ constexpr ll INF = 923372036854775000ll;
 struct Edge {
 	int to, val, nxt;
 } edges[MAXN * MAXN * 4];
-int head[MAXN * MAXN];
-void add_edge(int u, int v, int w) {
+int head[MAXN * MAXN], edge_index[MAXN * MAXN];
+void add_edge(int u, int v, int w, int ind) {
 	edges[++edges[0].val] = { v, w, head[u] };
 	head[u] = edges[0].val;
+	edge_index[edges[0].val] = ind;
 }
 
 int path[MAXN], switch_cost[MAXN], path_len[MAXN];
-ll min_dis = INF;
 
 template <typename T>
 class Heap {
@@ -141,11 +141,14 @@ const T& Heap<T>::top() const {
 	return arr[1];
 }
 
-ll Dijkstra(int src, int dst, int num_of_pos) {
-	static ll dis[MAXN * MAXN];
+ll Dijkstra(int src, int dst, int num_of_pos, int num_of_layer) {
+	static ll dis[MAXN * MAXN], n = num_of_pos / num_of_layer;
+	static int pre_edge[MAXN * MAXN], pre_layer[MAXN * MAXN];
 	static bool vis[MAXN * MAXN];
 	memset(dis, 0x3f, sizeof(dis));
 	memset(vis, false, sizeof(vis));
+	memset(pre_edge, -1, sizeof(pre_edge));
+	memset(pre_layer, -1, sizeof(pre_layer));
 	dis[src] = 0;
 
 	static Heap <pair <ll, int>> que(MAXN * MAXN);
@@ -164,9 +167,16 @@ ll Dijkstra(int src, int dst, int num_of_pos) {
 			if(vis[to]) {
 				continue;
 			}
+			if((pos.second - 1) / n == (to - 1) / n && (pos.second - 1) / n == pre_layer[pos.second]
+				&& pre_edge[pos.second] + 1 != edge_index[i]) {
+				continue;
+			}
 			if(dis[to] > dis[pos.second] + edges[i].val) {
 				dis[to] = dis[pos.second] + edges[i].val;
 				que.insert({ dis[to], to });
+
+				pre_edge[to] = edge_index[i];
+				pre_layer[to] = (pos.second - 1) / n;
 			}			
 		}
 	}
@@ -186,8 +196,8 @@ int main() {
 
 	for(int i = 1; i <= n; i++) {
 		for(int k = 1; k <= m; k++) {
-			add_edge(i, k * n + i, switch_cost[k]);
-			add_edge(k * n + i, i, 0);
+			add_edge(i, k * n + i, switch_cost[k], 0);
+			add_edge(k * n + i, i, 0, 0);
 		}
 	}
 	for(int k = 1; k <= m; k++) {
@@ -197,9 +207,9 @@ int main() {
 		}
 		for(int j = 1; j < len; j++) {
 			cost = input();
-			add_edge(k * n + path[j], k * n + path[j + 1], cost);
+			add_edge(k * n + path[j], k * n + path[j + 1], cost, j);
 		}
 	}
-	printf("%lld\n", Dijkstra(src, dst, n * (m + 1)));
+	printf("%lld\n", Dijkstra(src, dst, n * (m + 1), m + 1));
 	return 0;
 }
