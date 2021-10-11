@@ -55,6 +55,8 @@ int main() {
 			dis[path[j + 1]][path[j]] = get_min(dis[path[j + 1]][path[j]], cost);
 		}
 	}
+	// dis[i][j] means the shortest distance between i and j.
+	// Floyd
 	for(int k = 0; k < n; k++) {
 		for(int i = 0; i < n; i++) {
 			for(int j = 0; j < n; j++) {

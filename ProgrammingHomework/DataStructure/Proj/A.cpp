@@ -48,9 +48,10 @@ int main() {
 
 		max_num = get_max(max_num, num);
 	}
+	// buckets[k] counts the time number k appears.
 	for(int k = max_num; k > 0; k--) {
 		m -= buckets[k];
-		if(m <= 0) {
+		if(m <= 0) { // meet the mth number
 			// cout << k << endl;
 			printf("%d\n", k);
 			break;

@@ -168,7 +168,7 @@ ll Dijkstra(int src, int dst, int num_of_pos, int num_of_layer) {
 				continue;
 			}
 			if((pos.second - 1) / n == (to - 1) / n && (pos.second - 1) / n == pre_layer[pos.second]
-				&& pre_edge[pos.second] + 1 != edge_index[i]) {
+				&& pre_edge[pos.second] + 1 != edge_index[i]) { // if there is a circle in this layer, you have to travel the graph orderly.
 				continue;
 			}
 			if(dis[to] > dis[pos.second] + edges[i].val) {
