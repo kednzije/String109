@@ -46,7 +46,8 @@ int add_edge(int u, int v, ll w) { // return the index of edge
 }
 
 ll path[MAXN], switch_cost[MAXN], path_len[MAXN];
-ll ans = INF, min_tmp_ans[MAXN];
+// ll ans = INF, min_tmp_ans[MAXN];
+ll ans = INF, min_tmp_dis[MAXN], min_tmp_cost[MAXN];
 
 void dfs(const int src, const int dst, ll dis, ll cost, int pre_edge_ind) {
 	if(src == dst) {
@@ -56,10 +57,13 @@ void dfs(const int src, const int dst, ll dis, ll cost, int pre_edge_ind) {
 	if(dis * cost >= ans) {
 		return;
 	}
-	if(dis * cost > min_tmp_ans[src]) {
+	// if(dis * cost > min_tmp_ans[src]) {
+	if(dis > min_tmp_dis[src] && cost > min_tmp_cost[src]) {
 		return;
 	}
-	min_tmp_ans[src] = get_min(min_tmp_ans[src], dis * cost);
+	// min_tmp_ans[src] = get_min(min_tmp_ans[src], dis * cost);
+	min_tmp_dis[src] = get_min(min_tmp_dis[src], dis);
+	min_tmp_cost[src] = get_min(min_tmp_cost[src], cost);
 	
 	for(int i = head[src]; i; i = edges[i].nxt) {
 		int to = edges[i].to, to_line = edges[i].line;
@@ -69,7 +73,7 @@ void dfs(const int src, const int dst, ll dis, ll cost, int pre_edge_ind) {
 			dis + edges[i].dis + ((edges[pre_edge_ind].line != to_line || /* if equal */ pre_edge_ind != pre_edge[i]) ? switch_cost[to_line] : 0), 
 			cost + edges[i].cost, 
 			i
-		);
+		); // if there is a circle in this layer, you have to travel the graph orderly.
 	}
 }
 
@@ -101,7 +105,8 @@ int main() {
 	}
 
 	for(int i = 1; i <= n; i++) {
-		min_tmp_ans[i] = INF;
+		// min_tmp_ans[i] = INF;
+		min_tmp_dis[i] = min_tmp_cost[i] = INF;
 	}
 	dfs(src, dst, 0, 0, 0);
 	printf("%lld\n", ans);

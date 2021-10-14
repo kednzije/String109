@@ -35,6 +35,11 @@ constexpr ll MAXN = 1e7 + 50;
 
 ## 三、题目解析
 
+|  用户名   |   总分   |    A    |    B     |    C    |    D     |    E     |
+| :-------: | :------: | :-----: | :------: | :-----: | :------: | :------: |
+| 201220120 |   490    |   100   |   100    |   100   |   100    |    90    |
+| **用时**  | 82:45:26 | 0:43:38 | 15:34:16 | 1:22:37 | 24:08:53 | 40:56:02 |
+
 ### 1. Problem A
 
 >  题目大意：寻找n个数中第m大的数。
@@ -42,6 +47,8 @@ constexpr ll MAXN = 1e7 + 50;
 #### 解题思路
 
 利用桶对输入的数字进行记录，每个桶中保存数字出现的次数，然后从最大的数字开始向前寻找，遇见第m大的数字后输出答案并终止循环。
+
+**复杂度分析**：时间复杂度$O(n)$，空间复杂度$O(n)$.
 
 #### 核心代码
 
@@ -86,6 +93,8 @@ for(int k = max_num; k > 0; k--) {
 
 通过观察表格可以发现只有第(2)和第(3)种情况需要对答案进行调整，具体调整过程见核心代码；
 
+**复杂度分析**：期望时间复杂度$O(n)$，空间复杂度$O(n)$.
+
 #### 核心代码
 
 ```c++
@@ -127,6 +136,8 @@ printf("%d ", now_num);
 #### 解题思路
 
 利用邻接矩阵存图，处理完输入后利用Floyd算法求出最短路。
+
+**复杂度分析**：时间复杂度$O(n^3)$，空间复杂度$O(n^2)$.
 
 #### 核心代码
 
@@ -187,6 +198,8 @@ for(int k = 0; k < n; k++) {
 
 另外，由于建立分层图时并没有引入负权边，所以显然图中不会出现负权环，在同一条线路上上下下（即重复走同一条环路）的情况并不会对最后答案造成影响。
 
+**复杂度分析**：时间复杂度$O(nm\cdot log(nm))$，空间复杂度$O(nm)$.
+
 #### 核心代码
 
 ```c++
@@ -239,8 +252,51 @@ ll Dijkstra(int src, int dst, int num_of_pos, int num_of_layer) {
 
 ### 5. Problem E
 
+> 题目大意：一个n个点的有向图，存在m条线路，每条线路包含一些有向边且可能有环，切换线路需要时间，每走一条边需要消耗一定的战力值，路径代价为消耗战力值与时间的乘积，求点u到点v的最小代价。
+
 #### 解题思路
+
+处理输入建图后暴力搜索+剪枝优化。
+
+剪枝方式：
+
+1. 如果搜索到当前点时消耗战力与时间的乘积已然大于已经搜索得到的“答案”，那么继续搜索不会得到更优的结果，故停止搜索；
+2. 记录每个节点的最小时间和最小战力消耗，如果搜索到当前节点时消耗战力与时间的乘积大于当前节点最小消耗战力与最小时间的乘积，那么停止搜索；
+
+**复杂度分析**：时间复杂度$O(?)$，空间复杂度$O(nm)$.
 
 #### 核心代码
 
+```c++
+void dfs(const int src, const int dst, ll dis, ll cost, int pre_edge_ind) {
+	if(src == dst) {
+		ans = get_min(ans, dis * cost);
+		return;
+	}
+	if(dis * cost >= ans) {
+		return;
+	}
+	// if(dis * cost > min_tmp_ans[src]) {
+	if(dis > min_tmp_dis[src] && cost > min_tmp_cost[src]) {
+		return;
+	}
+	// min_tmp_ans[src] = get_min(min_tmp_ans[src], dis * cost);
+	min_tmp_dis[src] = get_min(min_tmp_dis[src], dis);
+	min_tmp_cost[src] = get_min(min_tmp_cost[src], cost);
+	
+	for(int i = head[src]; i; i = edges[i].nxt) {
+		int to = edges[i].to, to_line = edges[i].line;
+		dfs(
+			to, 
+			dst, 
+			dis + edges[i].dis + ((edges[pre_edge_ind].line != to_line || /* if equal */ pre_edge_ind != pre_edge[i]) ? switch_cost[to_line] : 0), 
+			cost + edges[i].cost, 
+			i
+		); // if there is a circle in this layer, you have to travel the graph orderly.
+	}
+}
+```
+
 #### 运行结果
+
+![image-20211209111835976](C:\Users\STRING10\AppData\Roaming\Typora\typora-user-images\image-20211209111835976.png)
