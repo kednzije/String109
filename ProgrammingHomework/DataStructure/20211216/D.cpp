@@ -25,4 +25,13 @@ inline ll input() {
 	}
 	return sign * num;
 }
-constexpr ll MAXN = 1e5 + 10;
+constexpr ll MAXN = 2e4 + 10;
+
+struct Edge {
+	int to, nxt;
+} edges[MAXN];
+int head[MAXN];
+void add_edge(int u, int v) {
+	edges[++edges[0].to] = { v, head[u] };
+	head[u] = edges[0].to;
+}
